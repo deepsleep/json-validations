@@ -4,19 +4,17 @@ import com.jfcheng.json.parse.exception.JsonStringParseException;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Serializable;
 
 /**
- *
  * According to rfc7159, a json string is a string which begins and ends with a quotation mark(").
  * <p>string = quotation-mark *char quotation-mark</p>
  * <p>All Unicode characters may be placed within the quotation marks, except for the characters that must be escaped:
- *    quotation mark, reverse solidus, and the control characters (U+0000 through U+001F).
+ * quotation mark, reverse solidus, and the control characters (U+0000 through U+001F).
  * </p>
- *
+ * <p>
  * <p>Created by jfcheng on 4/18/16.</p>
  */
-public class JsonString  implements  JsonValue{
+public class JsonString implements JsonValue {
     private static final long serialVersionUID = -4407999813436975142L;
 
     private static final char[] ALLOW_ESCAPE_CHARS = {'"', '\\', '/', 'b', 'f', 'n', 'r', 't', 'u'};
@@ -31,6 +29,7 @@ public class JsonString  implements  JsonValue{
 
     private String value;
 
+    //TODO: should string need to do validation again.
     public JsonString(String s) {
         value = s;
     }
@@ -141,15 +140,15 @@ public class JsonString  implements  JsonValue{
 
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return value.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj){
-        if(obj == null || !(obj instanceof JsonString)){
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof JsonString)) {
             return false;
-        } else{
+        } else {
             JsonString jsonStr = (JsonString) obj;
             return value.equals(jsonStr);
         }

@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by jfcheng on 4/19/16.
  */
-public class JsonArray implements JsonValue{
+public class JsonArray implements JsonValue {
     private static final long serialVersionUID = -3627576530393535452L;
 
     private ArrayList<JsonValue> values;
 
-    public JsonArray(){
-        values =new  ArrayList<JsonValue>();
+    public JsonArray() {
+        values = new ArrayList<JsonValue>();
     }
 
     public JsonArray(ArrayList<JsonValue> values) {
@@ -39,7 +39,7 @@ public class JsonArray implements JsonValue{
                 val = reader.read();
             } else if (JsonControlChar.isArrayEnd(c)) {
                 if (preCharIsValueSeparator) {
-                    throw new JsonArrayParseException("Json array parsing error: ',' expecting a value, but got '" + c + "'" );
+                    throw new JsonArrayParseException("Json array parsing error: ',' expecting a value, but got '" + c + "'");
                 } else {
                     foundTheArrayEnd = true;
                     break; // end of the array parsing.
@@ -78,21 +78,21 @@ public class JsonArray implements JsonValue{
 
     @Override
     public String toJsonText() {
-        if(values == null){
+        if (values == null) {
             return "null";
-        } else{
+        } else {
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.append(JsonControlChar.ARRAY_BEGIN);
 
             int i = 0;
-            while (i < values.size() -1){
+            while (i < values.size() - 1) {
                 strBuilder.append(values.get(i).toJsonText());
                 strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
                 i += 1;
             }
 
             // Add the last one elements
-            if(values.size() >0) {
+            if (values.size() > 0) {
                 strBuilder.append(values.get(i).toJsonText());
             }
 

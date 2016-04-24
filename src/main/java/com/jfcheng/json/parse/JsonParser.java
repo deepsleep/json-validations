@@ -8,22 +8,20 @@ import java.io.StringReader;
 
 /**
  * Created by jfcheng on 4/19/16.
- *
+ * <p>
  * This is a JSON parser according to the rfc7159.
- *
- *
  */
 public class JsonParser {
     public static JsonValue parseString(String string) throws JsonValueParseException {
         if (string == null) {
             return new JsonNull();
-        } else if (string.trim().length() == 0){
+        } else if (string.trim().length() == 0) {
             return new JsonString("");
-        }else {
+        } else {
             Reader reader = new StringReader(string);
             JsonValue jsonObject = null;
             try {
-                jsonObject =  parse(reader);
+                jsonObject = parse(reader);
             } catch (IOException e) {
                 new JsonValueParseException("Unexpected IOException" + e.getMessage());
             }

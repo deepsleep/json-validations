@@ -105,7 +105,7 @@ public class JsonObject implements JsonValue {
                 if (counter < values.size()) {
                     strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
                 }
-                counter += 1 ;
+                counter += 1;
             }
 
             strBuilder.append(JsonControlChar.OBJECT_END);

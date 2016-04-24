@@ -23,7 +23,7 @@ public class JsonNoQuotationValue {
 
         int val = lastReadChar;
 
-        while (val !=JsonControlChar.END_OF_READ && !JsonControlChar.isEndOfNoQuotationValue((char) val)) {
+        while (val != JsonControlChar.END_OF_READ && !JsonControlChar.isEndOfNoQuotationValue((char) val)) {
             char c = (char) val;
             stringBuilder.append(c);
             val = reader.read();

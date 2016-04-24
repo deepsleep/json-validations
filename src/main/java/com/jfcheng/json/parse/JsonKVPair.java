@@ -8,7 +8,7 @@ import java.io.Reader;
 /**
  * Created by jfcheng on 4/19/16.
  */
-public class JsonKVPair implements JsonValue{
+public class JsonKVPair implements JsonValue {
     private static final long serialVersionUID = 2479919232122425290L;
 
     private JsonString name;
@@ -37,9 +37,9 @@ public class JsonKVPair implements JsonValue{
         JsonValue value = null;
         int val = lastCharRead;
 
-       // int returnControlChar = JsonControlChar.MEANINGLESS_CHAR;
+        // int returnControlChar = JsonControlChar.MEANINGLESS_CHAR;
 
-        if(val == JsonControlChar.MEANINGLESS_CHAR){
+        if (val == JsonControlChar.MEANINGLESS_CHAR) {
             val = reader.read();  // read a char if lastCharRead is meaningless
         }
 

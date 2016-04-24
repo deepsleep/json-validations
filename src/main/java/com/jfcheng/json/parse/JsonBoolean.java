@@ -3,7 +3,7 @@ package com.jfcheng.json.parse;
 /**
  * Created by jfcheng on 4/24/16.
  */
-public class JsonBoolean implements JsonValue{
+public class JsonBoolean implements JsonValue {
     private static final long serialVersionUID = 5045495097922600307L;
 
     private boolean value;
