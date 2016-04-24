@@ -32,7 +32,8 @@ public class JsonKVPair implements JsonValue {
         return name.toJsonText() + JsonControlChar.NAME_SEPARATOR + value.toJsonText();
     }
 
-    public static JsonParserResult parse(Reader reader, int lastCharRead) throws IOException, JsonValueParseException {
+
+    static JsonParserResult parse(Reader reader, int lastCharRead) throws IOException, JsonValueParseException {
         JsonString name = null;
         JsonValue value = null;
         int val = lastCharRead;

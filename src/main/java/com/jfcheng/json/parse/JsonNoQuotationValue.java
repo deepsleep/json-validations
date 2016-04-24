@@ -18,7 +18,7 @@ public class JsonNoQuotationValue {
     private static final String NUMBER_GRAMMAR = "[-]?((0(\\.([0-9]+))?)|([1-9][0-9]*(\\.([0-9]+))?))(([eE][+-]?([0-9]+))?)";
     private static final Pattern NUMBER_PATTERN = Pattern.compile(NUMBER_GRAMMAR);
 
-    public static JsonParserResult parse(Reader reader, int lastReadChar) throws JsonValueParseException, IOException {
+    static JsonParserResult parse(Reader reader, int lastReadChar) throws JsonValueParseException, IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         int val = lastReadChar;
@@ -46,7 +46,7 @@ public class JsonNoQuotationValue {
         return new JsonParserResult(value, val);
     }
 
-    public static boolean isNumberValue(String str) {
+    static boolean isNumberValue(String str) {
         if (str == null) {
             return false;
         } else {
@@ -54,7 +54,7 @@ public class JsonNoQuotationValue {
         }
     }
 
-    public static final JsonNumber parseNumber(String str) {
+    static final JsonNumber parseNumber(String str) {
         if (str.contains(".") || str.contains("e") || str.contains("E")) {
             return new JsonNumber(Double.valueOf(str));
         } else {

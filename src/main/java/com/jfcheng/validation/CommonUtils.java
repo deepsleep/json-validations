@@ -5,13 +5,14 @@ package com.jfcheng.validation;
  */
 public class CommonUtils {
 
-    private CommonUtils(){}
+    private CommonUtils() {
+    }
 
-    public static boolean isNullOrEmptyString(String str){
-        if(str == null || str.length() == 0){
+    public static boolean isNullOrEmptyString(String str) {
+        if (str == null || str.length() == 0) {
             return true;
-        }else{
-           return false;
+        } else {
+            return false;
         }
     }
 }

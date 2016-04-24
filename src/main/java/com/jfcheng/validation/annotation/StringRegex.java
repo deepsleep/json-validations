@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface StringRegex {
     String value();
+
     String name();
 }

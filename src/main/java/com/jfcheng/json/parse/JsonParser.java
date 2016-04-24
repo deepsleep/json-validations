@@ -5,6 +5,9 @@ import com.jfcheng.json.parse.exception.JsonValueParseException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jfcheng on 4/19/16.
@@ -12,6 +15,9 @@ import java.io.StringReader;
  * This is a JSON parser according to the rfc7159.
  */
 public class JsonParser {
+    private JsonParser() {
+    }
+
     public static JsonValue parseString(String string) throws JsonValueParseException {
         if (string == null) {
             return new JsonNull();
@@ -23,7 +29,7 @@ public class JsonParser {
             try {
                 jsonObject = parse(reader);
             } catch (IOException e) {
-                new JsonValueParseException("Unexpected IOException" + e.getMessage());
+                new JsonValueParseException("Unexpected internal IOException" + e.getMessage());
             }
             return jsonObject;
         }
@@ -50,11 +56,38 @@ public class JsonParser {
                     remainChar = reader.read();
                 }
             }
+
+            reader.close();
             return value;
         }
     }
 
-    public static JsonParserResult parse(Reader reader, int lastCharRead) throws JsonValueParseException, IOException {
+
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
+        if (obj == null) {
+            return JsonNull.toJsonValue(obj);
+        } else if (obj instanceof JsonValue) {
+            return (JsonValue) obj;
+        } else if (obj instanceof String || obj instanceof Character || obj instanceof Enum) {
+            return JsonString.toJsonValue(obj);
+        } else if (obj instanceof Number) {
+            return JsonNumber.toJsonValue(obj);
+        } else if (obj instanceof Boolean) {
+            return JsonBoolean.toJsonValue(obj);
+        } else if (obj.getClass().isArray()) {
+            return JsonArray.toJsonValue(obj);
+        } else if (obj instanceof List) {
+            return JsonArray.toJsonValue(obj);
+        } else if (obj instanceof Set) {
+            return JsonArray.toJsonValue(obj);
+        } else if (obj instanceof Map) {
+            return JsonObject.toJsonValue(obj);
+        } else {
+            return JsonObject.toJsonValue(obj);
+        }
+    }
+
+    static JsonParserResult parse(Reader reader, int lastCharRead) throws JsonValueParseException, IOException {
         // value should be  false / null / true / object / array / number / string
         JsonValue jsonValue = null;
 

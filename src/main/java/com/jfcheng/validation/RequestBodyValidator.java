@@ -1,5 +1,6 @@
 package com.jfcheng.validation;
 
+import com.jfcheng.utils.ReflectionUtils;
 import com.jfcheng.validation.annotation.RequestAnnotationHelper;
 import com.jfcheng.validation.exception.InvalidParameterValueException;
 import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
@@ -19,7 +20,7 @@ public class RequestBodyValidator extends AbstractObjectValidator {
         super();
     }
 
-    public static RequestBodyValidator getValidator(){
+    public static RequestBodyValidator getValidator() {
         return validator;
     }
 
@@ -65,8 +66,8 @@ public class RequestBodyValidator extends AbstractObjectValidator {
     protected Object doArrayValidation(Object value, Field field) throws ValidationFailException {
         RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
         int length = Array.getLength(value);
-        for(int i = 0; i< length; i++){
-            doValueValidation(Array.get(value,i), null);
+        for (int i = 0; i < length; i++) {
+            doValueValidation(Array.get(value, i), null);
         }
         return value;
     }
@@ -74,24 +75,24 @@ public class RequestBodyValidator extends AbstractObjectValidator {
     @Override
     protected Object doListValidation(Object value, Field field) throws ValidationFailException {
         RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
-        doCollectionValidation(value,field);
+        doCollectionValidation(value, field);
         return value;
     }
 
     @Override
     protected Object doSetValidation(Object value, Field field) throws ValidationFailException {
         RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
-        doCollectionValidation(value,field);
+        doCollectionValidation(value, field);
         return value;
     }
 
     @Override
     protected Object doMapValidation(Object value, Field field) throws ValidationFailException {
-        Set<?> keys = ((Map<?,?>)value).keySet();
-        if(keys != null){
-            for(Object key: keys){
-                doValueValidation(key,field);
-                doValueValidation(((Map<?,?>)value).get(key), field);
+        Set<?> keys = ((Map<?, ?>) value).keySet();
+        if (keys != null) {
+            for (Object key : keys) {
+                doValueValidation(key, field);
+                doValueValidation(((Map<?, ?>) value).get(key), field);
             }
         }
         return value;
@@ -131,8 +132,8 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     private void doCollectionValidation(Object value, Field field) throws ValidationFailException {
         Iterator<?> iterator = ((Collection<?>) value).iterator();
-        while(iterator.hasNext()){
-            doValueValidation(iterator.next(),field);
+        while (iterator.hasNext()) {
+            doValueValidation(iterator.next(), field);
         }
     }
 

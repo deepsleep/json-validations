@@ -5,8 +5,8 @@ import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by jfcheng on 4/19/16.
@@ -25,7 +25,7 @@ public class JsonArray implements JsonValue {
     }
 
 
-    public static JsonArray parse(Reader reader) throws IOException, JsonValueParseException {
+    static JsonArray parse(Reader reader) throws IOException, JsonValueParseException {
         ArrayList<JsonValue> arrayValues = new ArrayList<>();
         boolean preCharIsValueSeparator = false;
         boolean foundTheArrayEnd = false;
@@ -64,7 +64,7 @@ public class JsonArray implements JsonValue {
                 throw new JsonArrayParseException("Json array parsing error: unexpected char: " + c);
             }
         }
-        if (foundTheArrayEnd == true) {
+        if (foundTheArrayEnd) {
             return new JsonArray(arrayValues);
         } else {
             throw new JsonArrayParseException("Json array parsing error: Unclosed array. Expecting ',' or ']',  but got 'EOF' ");
@@ -99,5 +99,55 @@ public class JsonArray implements JsonValue {
             strBuilder.append(JsonControlChar.ARRAY_END);
             return strBuilder.toString();
         }
+    }
+
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
+        if (obj == null) {
+            return new JsonNull();
+        } else if (obj instanceof JsonArray) {
+            return (JsonArray) obj;
+        } else if (obj instanceof List || obj instanceof Set) {
+            ArrayList<JsonValue> values = new ArrayList<JsonValue>();
+            Iterator iter = ((Collection) obj).iterator();
+            while (iter.hasNext()) {
+                values.add(JsonParser.toJsonValue(iter.next()));
+            }
+            return new JsonArray(values);
+
+        } else if (obj.getClass().isArray()) {
+            ArrayList<JsonValue> values = new ArrayList<JsonValue>();
+
+            int length = Array.getLength(obj);
+            for (int i = 0; i < length; i++) {
+                Object elementVal = Array.get(obj, i);
+                values.add(JsonParser.toJsonValue(elementVal));
+            }
+
+            return new JsonArray(values);
+        } else {
+            throw new JsonArrayParseException("Cannot cast " + obj.getClass() + " to JsonArray");
+        }
+    }
+
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o == null || !(o instanceof JsonArray)) {
+            return false;
+        } else {
+            return values.equals(o);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return toJsonText();
     }
 }

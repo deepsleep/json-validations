@@ -1,5 +1,6 @@
 package com.jfcheng.validation;
 
+import com.jfcheng.utils.ReflectionUtils;
 import com.jfcheng.validation.annotation.RequestAnnotationHelper;
 import com.jfcheng.validation.exception.ValidationFailException;
 
@@ -14,11 +15,11 @@ import java.util.*;
 public class ResponseBodyValidator extends AbstractObjectValidator {
     private static ResponseBodyValidator validator = new ResponseBodyValidator();
 
-    private ResponseBodyValidator(){
+    private ResponseBodyValidator() {
         super();
     }
 
-    public static AbstractObjectValidator getValidator(){
+    public static AbstractObjectValidator getValidator() {
         return validator;
     }
 
@@ -61,18 +62,18 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
     protected Object doArrayValidation(Object value, Field field) throws ValidationFailException {
         int length = Array.getLength(value);
         System.out.println(value.getClass());
-        Object newArray = Array.newInstance(value.getClass(),length);
+        Object newArray = Array.newInstance(value.getClass(), length);
 
-        for(int i=0; i< length; i++){
-            Object elem = Array.get(value,i);
-           // System.out.println("ddddddd" +elem.getClass() );
-            if(elem instanceof Number ||  elem instanceof Number  || elem instanceof String){
-           //     System.out.println("ddddddd");
-                newArray  = value;
-            }else {
+        for (int i = 0; i < length; i++) {
+            Object elem = Array.get(value, i);
+            // System.out.println("ddddddd" +elem.getClass() );
+            if (elem instanceof Number || elem instanceof Number || elem instanceof String) {
+                //     System.out.println("ddddddd");
+                newArray = value;
+            } else {
                 //Array.newInstance(value.getClass(),length);
-               // Constructor ctor = value.getClass().getConstructor(elem.getClass());
-               // Array.set(newArray, i, ctor.newInstance(doValueValidation(elem, null));
+                // Constructor ctor = value.getClass().getConstructor(elem.getClass());
+                // Array.set(newArray, i, ctor.newInstance(doValueValidation(elem, null));
             }
         }
 
@@ -81,30 +82,30 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Object doListValidation(Object value, Field field) throws ValidationFailException {
-        Collection<Object> newList =doCollectionValidation(value,field);
+        Collection<Object> newList = doCollectionValidation(value, field);
         return newList;
     }
 
     @Override
     protected Object doSetValidation(Object value, Field field) throws ValidationFailException {
-        Collection<Object> newSet = doCollectionValidation(value,field);
+        Collection<Object> newSet = doCollectionValidation(value, field);
         return newSet;
 
     }
 
-    private Collection<Object> doCollectionValidation( Object value, Field field) throws ValidationFailException {
+    private Collection<Object> doCollectionValidation(Object value, Field field) throws ValidationFailException {
         Object newObj;
         try {
             newObj = value.getClass().newInstance();
-        } catch (InstantiationException |IllegalAccessException e) {
-            throw new ValidationFailException(e.getMessage(),e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ValidationFailException(e.getMessage(), e);
         }
 
         Collection newCollection = (Collection) newObj;
         Iterator iterator = ((Collection) value).iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Object elemVal = iterator.next();
-            newCollection.add(doValueValidation(elemVal,null));
+            newCollection.add(doValueValidation(elemVal, null));
         }
         return newCollection;
     }
@@ -114,15 +115,15 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
         Object newObj = null;
         try {
             newObj = value.getClass().newInstance();
-        } catch (InstantiationException |IllegalAccessException e) {
-            throw new ValidationFailException(e.getMessage(),e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ValidationFailException(e.getMessage(), e);
         }
         Map<Object, Object> newMap = (Map<Object, Object>) newObj;
 
         Set keys = ((Map) value).keySet();
-        if(keys!=null && keys.size() > 0) {
+        if (keys != null && keys.size() > 0) {
             for (Object key : keys) {
-               newMap.put(doValueValidation(key,null), doValueValidation(((Map) value).get(key), null));
+                newMap.put(doValueValidation(key, null), doValueValidation(((Map) value).get(key), null));
             }
 
         }
@@ -131,9 +132,9 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Object doOtherObjectValidation(Object value, Field field) throws ValidationFailException {
-        if(value == null){
+        if (value == null) {
             return null;
-        }else{
+        } else {
             Class clazz = value.getClass();
 
             Object responseObj;
@@ -151,8 +152,8 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
                     f.setAccessible(true);
                     try {
                         fieldValue = f.get(value);
-                        if(fieldValue !=null && !RequestAnnotationHelper.isResponseParameterIgnore(fieldValue, f.getAnnotations())){
-                            f.set(responseObj, doValueValidation(fieldValue,f));
+                        if (fieldValue != null && !RequestAnnotationHelper.isResponseParameterIgnore(fieldValue, f.getAnnotations())) {
+                            f.set(responseObj, doValueValidation(fieldValue, f));
                         }
                     } catch (IllegalAccessException e) {
                         throw new ValidationFailException(e.getMessage(), e);

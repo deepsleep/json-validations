@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface JsonIgnore {
     boolean request() default true;
+
     boolean response() default true;
 }

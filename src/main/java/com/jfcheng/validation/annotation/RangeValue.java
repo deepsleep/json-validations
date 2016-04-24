@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface RangeValue {
     long min();
+
     long max();
 }
 

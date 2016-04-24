@@ -4,6 +4,7 @@ import com.jfcheng.json.parse.exception.JsonStringParseException;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * According to rfc7159, a json string is a string which begins and ends with a quotation mark(").
@@ -29,8 +30,7 @@ public class JsonString implements JsonValue {
 
     private String value;
 
-    //TODO: should string need to do validation again.
-    public JsonString(String s) {
+    JsonString(String s) {
         value = s;
     }
 
@@ -138,6 +138,35 @@ public class JsonString implements JsonValue {
         return JsonControlChar.QUOTATION_MARK + value + JsonControlChar.QUOTATION_MARK;
     }
 
+    public static JsonValue toJsonValue(Object obj) throws JsonStringParseException {
+        if (obj == null) {
+            return new JsonNull();
+        } else if (obj instanceof JsonString) {
+            return (JsonString) obj;
+        } else if (obj instanceof String || obj instanceof Character || obj instanceof Enum) {
+
+            String str = obj.toString();
+            // since the parse method need a quotation as the end of the json string.Thus append " to the end of the String.
+            String modifiedStr = str + '"';
+            Reader reader = new StringReader(modifiedStr);
+            try {
+                return parse(reader);
+            } catch (IOException e) {
+                e.printStackTrace(); // This exception should not be
+                throw new JsonStringParseException("Unexpected internal exception happen in parsing JsonString");
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new JsonStringParseException("Unexpected internal exception happen in parsing JsonString");
+                }
+            }
+        } else {
+            throw new JsonStringParseException("Cannot cast " + obj.getClass() + "to JsonString");
+        }
+    }
+
 
     @Override
     public int hashCode() {
@@ -146,11 +175,18 @@ public class JsonString implements JsonValue {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof JsonString)) {
+        if (obj == this) {
+            return true;
+        } else if (obj == null || !(obj instanceof JsonString)) {
             return false;
         } else {
             JsonString jsonStr = (JsonString) obj;
             return value.equals(jsonStr);
         }
+    }
+
+    @Override
+    public String toString() {
+        return toJsonText();
     }
 }

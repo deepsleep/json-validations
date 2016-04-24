@@ -6,6 +6,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jfcheng on 4/20/16.
@@ -666,8 +670,86 @@ public class JsonParserTest {
         Assert.assertTrue(isFail);
     }
 
+    /**
+     * Part 2: Test toJsonValue
+     */
+    @Test
+    public void testToJsonValueForBoolean() throws JsonValueParseException {
+        boolean b1 = true;
+        boolean b2 = false;
+        JsonValue j1 = JsonParser.toJsonValue(b1);
+        JsonValue j2 = JsonParser.toJsonValue(b2);
+        Assert.assertEquals(b1,j1.getValue());
+        Assert.assertEquals(b2,j2.getValue());
+    }
 
-    // make it not runnable
+    @Test
+    public void testToJsonValueForNull() throws JsonValueParseException{
+        Object obj = null;
+        JsonValue j = JsonParser.toJsonValue(obj);
+        Assert.assertNull(j.getValue());
+    }
+
+    @Test
+    public void testToJsonValueForNumber() throws JsonValueParseException{
+        int i1 = 12;
+        Long l2 = new Long(23L);
+        double d3 = new Double(13.23);
+        short s4 = 1;
+        JsonValue j1 = JsonParser.toJsonValue(i1);
+        JsonValue j2 = JsonParser.toJsonValue(l2);
+        JsonValue j3 = JsonParser.toJsonValue(d3);
+        JsonValue j4 = JsonParser.toJsonValue(s4);
+        Assert.assertEquals(i1,j1.getValue());
+        Assert.assertEquals(l2,j2.getValue());
+        Assert.assertEquals(d3,j3.getValue());
+        Assert.assertEquals(s4,j4.getValue());
+    }
+
+    @Test
+    public void testToJsonValueForString() throws JsonValueParseException {
+        String s1 = "JSON-STRING";
+        JsonValue j1 = JsonParser.toJsonValue(s1);
+        Assert.assertEquals(s1,j1.getValue());
+    }
+
+    @Test
+    public void testToJsonValueForArray() throws JsonValueParseException {
+        int[] ints = {1,2,3};
+        String expectedIntJson = "[1,2,3]";
+        JsonValue j1 = JsonParser.toJsonValue(ints);
+        Assert.assertEquals(expectedIntJson,j1.toJsonText());
+
+        Object[] objs = {12,"abc", ints};
+        String expectedObjectJson = "[12,\"abc\",[1,2,3]]";
+        JsonValue j2 = JsonParser.toJsonValue(objs);
+        Assert.assertEquals(expectedIntJson,j1.toJsonText());
+        Assert.assertEquals(expectedObjectJson,j2.toJsonText());
+    }
+
+    @Test
+    public void testToJsonValueForList() throws JsonValueParseException {
+        List<Object> list = new ArrayList<Object>();
+        list.add("abc");
+        list.add(new Integer(123));
+        list.add(new Character('t'));
+        String expectedJson = "[\"abc\",123,\"t\"]";
+        JsonValue j = JsonParser.toJsonValue(list);
+        Assert.assertEquals(expectedJson,j.toJsonText());
+    }
+
+    @Test
+    public void testToJsonValueForMap() throws JsonValueParseException {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("abc", "ABC");
+        Object[] objs = {12,"abc"};
+        map.put("123", objs);
+        JsonValue j = JsonParser.toJsonValue(map);
+        Assert.assertEquals(2, ((Map)j.getValue()).size());
+        System.out.println(j.toJsonText());
+    }
+
+    // rename it to make it runnable
     public static void mains(String[] args) {
         // for 3 pass test case
         String passFilePrefix = "pass";

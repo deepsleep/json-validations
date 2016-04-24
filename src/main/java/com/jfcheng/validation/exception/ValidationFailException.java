@@ -5,11 +5,11 @@ package com.jfcheng.validation.exception;
  */
 public class ValidationFailException extends Exception {
 
-    public ValidationFailException(String message){
+    public ValidationFailException(String message) {
         super(message);
     }
 
-    public ValidationFailException(String message, Throwable throwable){
+    public ValidationFailException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

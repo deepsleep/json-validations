@@ -6,10 +6,13 @@ package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +29,7 @@ public class JsonObject implements JsonValue {
         this.values = values;
     }
 
-    public static JsonObject parse(Reader reader) throws IOException, JsonValueParseException {
+    static JsonObject parse(Reader reader) throws IOException, JsonValueParseException {
 
         Map<JsonString, JsonValue> values = new HashMap<JsonString, JsonValue>();
         int val = reader.read();
@@ -62,7 +65,7 @@ public class JsonObject implements JsonValue {
             }
         }
 
-        if (isObjectEndWasFound == true) {
+        if (isObjectEndWasFound) {
             return new JsonObject(values);
         } else {
             throw new JsonObjectParseException("Json object parsing error: Unclosed object. Expecting ',' or ']',  but got 'EOF' ");
@@ -84,8 +87,8 @@ public class JsonObject implements JsonValue {
 
 
     @Override
-    public JsonObject getValue() {
-        return this;
+    public Map getValue() {
+        return values;
     }
 
     @Override
@@ -112,5 +115,74 @@ public class JsonObject implements JsonValue {
             return strBuilder.toString();
         }
     }
+
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
+        if (obj == null) {
+            return new JsonNull();
+        } else if (obj instanceof JsonObject) {
+            return (JsonObject) obj;
+        } else if (obj instanceof Map) {
+            Map<JsonString, JsonValue> values = new HashMap<>();
+            Map<?, ?> mapValues = (Map<?, ?>) obj;
+            Set keys = ((Map) obj).keySet();
+            for (Object key : keys) {
+                //TODO: Decide which method to deal with the key of Map is not String.
+//                if(!(key instanceof  String) && !(key instanceof  JsonString)){
+//                    throw new JsonValueParseException("JsonValue only supports Maps whose keys are String. Type of " + key.getClass() + " is not supported.");
+//                }
+
+                JsonString strKey = (JsonString) JsonString.toJsonValue(key.toString()); // Get the map key.toString as the key.
+                JsonValue value = JsonParser.toJsonValue(mapValues.get(key));
+                values.put(strKey, value);
+            }
+            return new JsonObject(values);
+        } else {
+            // Other objects
+            List<Field> fields = ReflectionUtils.getAllInstanceFields(obj.getClass());
+
+            Map<JsonString, JsonValue> values = new HashMap<>();
+            if (fields != null && fields.size() > 0) {
+
+                for (Field f : fields) {
+                    f.setAccessible(true);
+                    Object fValue = null;
+                    try {
+                        fValue = f.get(obj);
+                    } catch (IllegalAccessException e) {
+                        new JsonObjectParseException(e.getMessage());
+                    }
+                    String fieldName = f.getName();
+                    JsonString jsonStr = (JsonString) JsonString.toJsonValue(fieldName);
+                    JsonValue jsonValue = JsonParser.toJsonValue(fValue);
+                    values.put(jsonStr, jsonValue);
+
+                }
+            }
+            return new JsonObject(values);
+        }
+    }
+
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        } else if (object == null || !(object instanceof JsonObject)) {
+            return false;
+        } else {
+            return values.equals(object);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return toJsonText();
+    }
+
 
 }
