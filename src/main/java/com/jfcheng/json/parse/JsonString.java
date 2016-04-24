@@ -4,11 +4,21 @@ import com.jfcheng.json.parse.exception.JsonStringParseException;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 
 /**
- * Created by jfcheng on 4/18/16.
+ *
+ * According to rfc7159, a json string is a string which begins and ends with a quotation mark(").
+ * <p>string = quotation-mark *char quotation-mark</p>
+ * <p>All Unicode characters may be placed within the quotation marks, except for the characters that must be escaped:
+ *    quotation mark, reverse solidus, and the control characters (U+0000 through U+001F).
+ * </p>
+ *
+ * <p>Created by jfcheng on 4/18/16.</p>
  */
-public class JsonString {
+public class JsonString  implements  JsonValue{
+    private static final long serialVersionUID = -4407999813436975142L;
+
     private static final char[] ALLOW_ESCAPE_CHARS = {'"', '\\', '/', 'b', 'f', 'n', 'r', 't', 'u'};
     private static final char[] NOT_ALLOWED_CHARS = {'\n', '\r', '\t'}; // not allow new line char or tab in the string value
 
@@ -19,6 +29,11 @@ public class JsonString {
     private static final char UNICODE_a = 97;  // a, \u0061
     private static final char UNICODE_f = 102; // f, \u0066
 
+    private String value;
+
+    public JsonString(String s) {
+        value = s;
+    }
 
     private static boolean isAllowEscapeChar(char value) {
         boolean isAllowedChar = false;
@@ -51,13 +66,9 @@ public class JsonString {
     }
 
     //The reader already has been read the start quotation mark ", parse the string value
-    public static String parse(Reader reader) throws IOException, JsonStringParseException {
+    public static JsonString parse(Reader reader) throws IOException, JsonStringParseException {
 
         StringBuilder stringBuilder = new StringBuilder();  // start quotation.
-
-        // boolean hasEscapeMarker = false;
-        //   StringBuilder unicodeValues = null;
-
 
         // searching for the end quotation and build string value
         boolean foundEndOfStringQuotation = false;
@@ -77,47 +88,8 @@ public class JsonString {
             }
         }
 
-//
-//
-//            else {
-//                if (hasEscapeMarker) {
-//                    if (isAllowEscapeChar(c)) {
-//                        stringBuilder.append(c);
-//                        if(c != 'u'){
-//                             hasEscapeMarker = false;
-//                        } // else for remain unicode value
-//                    } else if (isValidUnicodeChar(c)) {
-//                        if (unicodeValues == null) {
-//                            unicodeValues = new StringBuilder(4);
-//                        }
-//                        unicodeValues.append(c);
-//
-//                        if (unicodeValues.length() == 4) {
-//                            stringBuilder.append(unicodeValues);
-//                            unicodeValues = null;       // reset unicode value
-//                            hasEscapeMarker = false;    // reset escape marker
-//                        }
-//
-//                    } else {
-//                        throw new JsonStringParseException("Invalid unicode value: " + c + " in " + stringBuilder);
-//                    }
-//
-//                } else {
-//                    if (c == '\\') {
-//                        hasEscapeMarker = true;
-//                        stringBuilder.append(c);
-//                    } else if (c == '"') { // end of string
-//                        foundEndOfStringQuotation = true;
-//                        break;        // break the while loop to stop searching.
-//                    } else {
-//                        stringBuilder.append(c);
-//                    }
-//                }
-//            }
-//        }
-
         if (foundEndOfStringQuotation) {
-            return stringBuilder.toString();
+            return new JsonString(stringBuilder.toString());
         } else {
             throw new JsonStringParseException("Fail to find the end double quotation \" in " + stringBuilder);
         }
@@ -157,4 +129,29 @@ public class JsonString {
         return unicodeValues.toString();
     }
 
+    @Override
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toJsonText() {
+        return JsonControlChar.QUOTATION_MARK + value + JsonControlChar.QUOTATION_MARK;
+    }
+
+
+    @Override
+    public int hashCode(){
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj == null || !(obj instanceof JsonString)){
+            return false;
+        } else{
+            JsonString jsonStr = (JsonString) obj;
+            return value.equals(jsonStr);
+        }
+    }
 }

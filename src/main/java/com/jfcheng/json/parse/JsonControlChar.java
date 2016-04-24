@@ -16,10 +16,8 @@ public class JsonControlChar {
     public static final char VALUE_SEPARATOR = ',';
 
     public static final char QUOTATION_MARK = '"'; // "
-
     public static final int END_OF_READ = -1;
-    
-    
+
     public static final int MEANINGLESS_CHAR = -2;
 
 

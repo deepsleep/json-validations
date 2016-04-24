@@ -1,28 +1,32 @@
 package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonArrayParseException;
-import com.jfcheng.json.parse.exception.JsonValueParseExeception;
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jfcheng on 4/19/16.
  */
-public class JsonArray {
-    private ArrayList<Object> values;
+public class JsonArray implements JsonValue{
+    private static final long serialVersionUID = -3627576530393535452L;
 
-    public JsonArray(ArrayList<Object> values) {
+    private ArrayList<JsonValue> values;
+
+    public JsonArray(){
+        values =new  ArrayList<JsonValue>();
+    }
+
+    public JsonArray(ArrayList<JsonValue> values) {
         this.values = values;
     }
 
-    public ArrayList<Object> getValues() {
-        return values;
-    }
 
-    public static JsonArray parse(Reader reader) throws IOException, JsonValueParseExeception {
-        ArrayList<Object> arrayValues = new ArrayList<>();
+    public static JsonArray parse(Reader reader) throws IOException, JsonValueParseException {
+        ArrayList<JsonValue> arrayValues = new ArrayList<>();
         boolean preCharIsValueSeparator = false;
         boolean foundTheArrayEnd = false;
         int val = reader.read();
@@ -64,6 +68,36 @@ public class JsonArray {
             return new JsonArray(arrayValues);
         } else {
             throw new JsonArrayParseException("Json array parsing error: Unclosed array. Expecting ',' or ']',  but got 'EOF' ");
+        }
+    }
+
+    @Override
+    public List<JsonValue> getValue() {
+        return values;
+    }
+
+    @Override
+    public String toJsonText() {
+        if(values == null){
+            return "null";
+        } else{
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.append(JsonControlChar.ARRAY_BEGIN);
+
+            int i = 0;
+            while (i < values.size() -1){
+                strBuilder.append(values.get(i).toJsonText());
+                strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
+                i += 1;
+            }
+
+            // Add the last one elements
+            if(values.size() >0) {
+                strBuilder.append(values.get(i).toJsonText());
+            }
+
+            strBuilder.append(JsonControlChar.ARRAY_END);
+            return strBuilder.toString();
         }
     }
 }

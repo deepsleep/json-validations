@@ -5,24 +5,30 @@ package com.jfcheng.json.parse;
  */
 
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
-import com.jfcheng.json.parse.exception.JsonValueParseExeception;
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-public class JsonObject {
-    private Map<String, Object> values;
+public class JsonObject implements JsonValue {
+    private static final long serialVersionUID = 5521558531152229557L;
 
-    public JsonObject(Map<String, Object> values) {
+    private Map<JsonString, JsonValue> values;
+
+    public JsonObject() {
+        this.values = new HashMap<JsonString, JsonValue>();
+    }
+
+    public JsonObject(Map<JsonString, JsonValue> values) {
         this.values = values;
     }
 
-    // look for the end of object }
-    public static JsonObject parse(Reader reader) throws IOException, JsonValueParseExeception {
+    public static JsonObject parse(Reader reader) throws IOException, JsonValueParseException {
 
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<JsonString, JsonValue> values = new HashMap<JsonString, JsonValue>();
         int val = reader.read();
         boolean isObjectEndWasFound = false;
         while (val != -1) {
@@ -64,7 +70,7 @@ public class JsonObject {
 
     }
 
-    private static int addKVPair(Map<String, Object> values, Reader reader, int lastReadChar) throws IOException, JsonValueParseExeception {
+    private static int addKVPair(Map<JsonString, JsonValue> values, Reader reader, int lastReadChar) throws IOException, JsonValueParseException {
         JsonParserResult returnValue = JsonKVPair.parse(reader, lastReadChar);
         JsonKVPair kvPair = (JsonKVPair) returnValue.getValue();
         // check if the key is duplicated
@@ -76,8 +82,35 @@ public class JsonObject {
         }
     }
 
-    public Map<String, Object> getValues() {
-        return values;
+
+    @Override
+    public JsonObject getValue() {
+        return this;
+    }
+
+    @Override
+    public String toJsonText() {
+        if (values == null) {
+            return "null";
+        } else {
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.append(JsonControlChar.OBJECT_BEGIN);
+            Set<JsonString> keys = values.keySet();
+
+            int counter = 1;
+            for (JsonString key : keys) {
+                strBuilder.append(key.toJsonText());
+                strBuilder.append(JsonControlChar.NAME_SEPARATOR);
+                strBuilder.append(values.get(key).toJsonText());
+                if (counter < values.size()) {
+                    strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
+                }
+                counter += 1 ;
+            }
+
+            strBuilder.append(JsonControlChar.OBJECT_END);
+            return strBuilder.toString();
+        }
     }
 
 }

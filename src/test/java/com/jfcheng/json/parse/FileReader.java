@@ -19,15 +19,4 @@ public class FileReader {
         return reader;
     }
 
-    public static void main(String[] args) throws IOException {
-        Reader reader = getBufferReader("/Users/jfcheng/IdeaProjects/ObjectValidations/JsonObjectValidations/src/main/resources/json-parser/JsonAllowWhiteSpaces");
-        int i;
-        while((i = reader.read()) != -1){
-            //
-        }
-        System.out.println("end of read");
-        System.out.println(reader.read());
-        System.out.println(reader.read());
-    }
-
 }

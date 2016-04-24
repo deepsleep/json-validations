@@ -1,6 +1,6 @@
 package com.jfcheng.json.parse;
 
-import com.jfcheng.json.parse.exception.JsonValueParseExeception;
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -8,26 +8,33 @@ import java.io.Reader;
 /**
  * Created by jfcheng on 4/19/16.
  */
-public class JsonKVPair {
-    private String name;
-    private Object value;
+public class JsonKVPair implements JsonValue{
+    private static final long serialVersionUID = 2479919232122425290L;
 
-    public JsonKVPair(String name, Object value) {
+    private JsonString name;
+    private JsonValue value;
+
+    public JsonKVPair(JsonString name, JsonValue value) {
         this.name = name;
         this.value = value;
     }
 
-    public String getName() {
+    public JsonString getName() {
         return name;
     }
 
-    public Object getValue() {
+    public JsonValue getValue() {
         return value;
     }
 
-    public static JsonParserResult parse(Reader reader, int lastCharRead) throws IOException, JsonValueParseExeception {
-        String name = null;
-        Object value = null;
+    @Override
+    public String toJsonText() {
+        return name.toJsonText() + JsonControlChar.NAME_SEPARATOR + value.toJsonText();
+    }
+
+    public static JsonParserResult parse(Reader reader, int lastCharRead) throws IOException, JsonValueParseException {
+        JsonString name = null;
+        JsonValue value = null;
         int val = lastCharRead;
 
        // int returnControlChar = JsonControlChar.MEANINGLESS_CHAR;
@@ -52,7 +59,7 @@ public class JsonKVPair {
 
                     break; // break the while loop.
                 } else {
-                    throw new JsonValueParseExeception("Key should be a quotation string: unexpected char '" + c + "' was found.");
+                    throw new JsonValueParseException("Key should be a quotation string: unexpected char '" + c + "' was found.");
                 }
             }
         }

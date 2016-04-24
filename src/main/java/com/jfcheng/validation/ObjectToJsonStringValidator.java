@@ -4,7 +4,6 @@ import com.jfcheng.validation.annotation.JsonName;
 import com.jfcheng.validation.annotation.RequestAnnotationHelper;
 import com.jfcheng.validation.exception.ValidationFailException;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
