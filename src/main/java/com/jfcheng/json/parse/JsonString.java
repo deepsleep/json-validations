@@ -180,8 +180,7 @@ public class JsonString implements JsonValue {
         } else if (obj == null || !(obj instanceof JsonString)) {
             return false;
         } else {
-            JsonString jsonStr = (JsonString) obj;
-            return value.equals(jsonStr);
+            return value.equals(((JsonString) obj).getValue());
         }
     }
 

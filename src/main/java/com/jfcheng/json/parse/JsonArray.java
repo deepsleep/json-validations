@@ -130,21 +130,21 @@ public class JsonArray implements JsonValue {
     }
 
 
-    @Override
-    public int hashCode() {
-        return values.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o == null || !(o instanceof JsonArray)) {
-            return false;
-        } else {
-            return values.equals(o);
-        }
-    }
+//    @Override
+//    public int hashCode() {
+//        return values.hashCode();
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == this) {
+//            return true;
+//        } else if (o == null || !(o instanceof JsonArray) ) {
+//            return false;
+//        } else {
+//            return values.equals(o);
+//        }
+//    }
 
     @Override
     public String toString() {

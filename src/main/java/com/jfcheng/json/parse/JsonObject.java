@@ -163,21 +163,21 @@ public class JsonObject implements JsonValue {
     }
 
 
-    @Override
-    public int hashCode() {
-        return values.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        } else if (object == null || !(object instanceof JsonObject)) {
-            return false;
-        } else {
-            return values.equals(object);
-        }
-    }
+//    @Override
+//    public int hashCode() {
+//        return values.hashCode();
+//    }
+//
+//    @Override
+//    public boolean equals(Object object) {
+//        if (object == this) {
+//            return true;
+//        } else if (object == null || !(object instanceof JsonObject)) {
+//            return false;
+//        } else {
+//            return values.equals(object);
+//        }
+//    }
 
     @Override
     public String toString() {

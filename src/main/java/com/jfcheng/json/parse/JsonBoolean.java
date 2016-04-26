@@ -36,20 +36,20 @@ public class JsonBoolean implements JsonValue {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
-
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o == null || !(o instanceof JsonBoolean)) {
-            return false;
-        } else {
-            return value.equals(o);
-        }
-    }
+//    @Override
+//    public int hashCode() {
+//        return value.hashCode();
+//    }
+//
+//    public boolean equals(Object o) {
+//        if (o == this) {
+//            return true;
+//        } else if (o == null || !(o instanceof JsonBoolean)) {
+//            return false;
+//        } else {
+//            return value.equals(o);
+//        }
+//    }
 
     @Override
     public String toString() {

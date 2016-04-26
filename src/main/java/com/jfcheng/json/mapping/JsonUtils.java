@@ -25,6 +25,11 @@ public class JsonUtils {
         return jsonValueToEntity(jsonValue,clazz,null);
     }
 
+    public static Object jsonStringToEntity(String string, Class clazz) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+        JsonValue jsonValue = JsonParser.parseString(string);
+        return jsonValueToEntity(jsonValue,clazz,null);
+    }
+
     public static Object jsonValueToEntity(JsonValue jsonValue, Class rawClass, Type[] parameterTypes) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         if (jsonValue instanceof JsonNull) {
@@ -92,7 +97,7 @@ public class JsonUtils {
         String strVal = jsonValue.getValue();
         if (clazz == String.class) {
             return strVal;
-        } else if (clazz == Character.class && strVal.length() == 1) {
+        } else if ((clazz == Character.class || clazz == Character.TYPE) && strVal.length() == 1) {
             return strVal.charAt(0);
         } else if (clazz.isEnum()) {
             Class<Enum> eClass = (Class<Enum>) clazz;
