@@ -1,5 +1,6 @@
 package com.jfcheng.json.parse;
 
+import com.jfcheng.json.parse.JsonUtils;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,7 +88,22 @@ public class JsonParserTest {
             reader.close();
         }
         Assert.assertTrue(isFail);
+    }
 
+    @Test
+    public void testSelfDefineFail2() throws IOException {
+        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonFailTest2.json");
+        Object jsonValue;
+        boolean isFail = false;
+        try {
+            jsonValue = JsonParser.parse(reader);
+        } catch (JsonValueParseException e) {
+            e.printStackTrace();
+            isFail = true;
+        } finally {
+            reader.close();
+        }
+        Assert.assertTrue(isFail);
     }
 
     @Test
@@ -704,6 +720,7 @@ public class JsonParserTest {
         Assert.assertEquals(l2,j2.getValue());
         Assert.assertEquals(d3,j3.getValue());
         Assert.assertEquals(s4,j4.getValue());
+        System.out.println(JsonUtils.entityToJsonText(i1));
     }
 
     @Test
@@ -747,6 +764,17 @@ public class JsonParserTest {
         JsonValue j = JsonParser.toJsonValue(map);
         Assert.assertEquals(2, ((Map)j.getValue()).size());
         System.out.println(j.toJsonText());
+    }
+
+    @Test
+    public void testToJsonValueForSelfDefineClass() throws JsonValueParseException {
+        Address address = new Address("13412341234", "Shennan Rd.");
+        JsonValue j = JsonParser.toJsonValue(address);
+        System.out.println(j.toJsonText());
+
+//        Assert.assertEquals(address.getPhone(),((Map)j.getValue()).get("phone"));
+//        Assert.assertEquals(address.getRoad(),((Map)j.getValue()).get("road"));
+
     }
 
     // rename it to make it runnable

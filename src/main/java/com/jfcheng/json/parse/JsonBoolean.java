@@ -2,6 +2,8 @@ package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by jfcheng on 4/24/16.
  */
@@ -36,24 +38,14 @@ public class JsonBoolean implements JsonValue {
         }
     }
 
-//    @Override
-//    public int hashCode() {
-//        return value.hashCode();
-//    }
-//
-//    public boolean equals(Object o) {
-//        if (o == this) {
-//            return true;
-//        } else if (o == null || !(o instanceof JsonBoolean)) {
-//            return false;
-//        } else {
-//            return value.equals(o);
-//        }
-//    }
-
     @Override
     public String toString() {
         return String.valueOf(toJsonText());
+    }
+
+
+    Object toJavaBooleanValue(Field field) {
+       return value;
     }
 
 }

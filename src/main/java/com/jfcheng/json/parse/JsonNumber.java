@@ -1,6 +1,9 @@
 package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
+import com.jfcheng.utils.DataConversionUtils;
+
+import java.lang.reflect.Field;
 
 
 /**
@@ -56,5 +59,10 @@ public class JsonNumber implements JsonValue {
     @Override
     public String toString() {
         return String.valueOf(toJsonText());
+    }
+
+
+    Object toJavaNumberValue(Field field, Class<?> clazz) {
+        return DataConversionUtils.numberToPrimitive(value, clazz);
     }
 }

@@ -1,10 +1,14 @@
 package com.jfcheng.json.parse;
 
+import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,6 +124,44 @@ public class JsonParser {
         }
 
         return new JsonParserResult(jsonValue, controlChar);
+    }
+
+    static Object jsonValueToEntity(JsonValue jsonValue, Field field, Class rawClass, Type[] parameterTypes) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+        if (jsonValue instanceof JsonNull) {
+            return null;
+        } else if (jsonValue instanceof JsonBoolean) {
+            JsonBoolean jBoolean = (JsonBoolean) jsonValue;
+            return jBoolean.toJavaBooleanValue(field);
+        } else if (jsonValue instanceof JsonNumber) {
+            JsonNumber jNumber = (JsonNumber) jsonValue;
+            return jNumber.toJavaNumberValue(field,rawClass);
+        } else if (jsonValue instanceof JsonString) {
+            JsonString jString = (JsonString) jsonValue;
+            return jString.toJavaStringValue(field,rawClass);
+        } else if (jsonValue instanceof JsonArray) {
+            JsonArray jArray = (JsonArray)jsonValue;
+            if (rawClass.isArray()) {
+                return jArray.toJavaArrayValue(field,rawClass);
+            } else if (Collection.class.isAssignableFrom(rawClass) && parameterTypes != null && parameterTypes.length == 1) {
+                return jArray.toJavaCollectionValue(field,rawClass,parameterTypes[0]);
+            } else {
+                throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
+            }
+        } else if (jsonValue instanceof JsonObject) {
+            JsonObject jObject = (JsonObject) jsonValue;
+            if (Map.class.isAssignableFrom(rawClass)) {
+                if (parameterTypes != null && parameterTypes.length == 2) {
+                    return jObject.toJavaMapValue(field,rawClass,parameterTypes[0],parameterTypes[1]);
+                } else {
+                    throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
+                }
+            } else {
+                return jObject.toOtherObjectValue(field,rawClass);
+            }
+        } else {
+            throw new JsonParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);
+        }
+
     }
 
 

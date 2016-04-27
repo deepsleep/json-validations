@@ -5,6 +5,7 @@ import com.jfcheng.json.parse.exception.JsonStringParseException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 
 /**
  * According to rfc7159, a json string is a string which begins and ends with a quotation mark(").
@@ -187,5 +188,21 @@ public class JsonString implements JsonValue {
     @Override
     public String toString() {
         return toJsonText();
+    }
+
+
+
+    Object toJavaStringValue( Field field, Class<?> clazz) {
+        String strVal = value;
+        if (clazz == String.class) {
+            return strVal;
+        } else if ((clazz == Character.class || clazz == Character.TYPE) && strVal.length() == 1) {
+            return strVal.charAt(0);
+        } else if (clazz.isEnum()) {
+            Class<Enum> eClass = (Class<Enum>) clazz;
+            return Enum.valueOf(eClass, strVal);
+        } else {
+            return strVal;
+        }
     }
 }

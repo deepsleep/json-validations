@@ -4,13 +4,18 @@ package com.jfcheng.json.parse;
  * Created by jfcheng on 4/19/16.
  */
 
+import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.utils.DataConversionUtils;
 import com.jfcheng.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,6 +187,75 @@ public class JsonObject implements JsonValue {
     @Override
     public String toString() {
         return toJsonText();
+    }
+
+
+     Map<Object, Object> toJavaMapValue(Field field, Class rawClass, Type keyType, Type valueType) throws JsonValueParseException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+        if (keyType instanceof Class && (keyType == String.class || (Number.class.isAssignableFrom((Class) keyType)))) {
+            Map<JsonString, JsonValue> mapValue = values;
+            Map<Object, Object> map = null;
+
+            if (rawClass.isInterface() || Modifier.isAbstract(rawClass.getModifiers())) {
+                map = new HashMap<>();
+            } else {
+                map = (Map<Object, Object>) rawClass.newInstance();
+            }
+
+            Set<JsonString> keys = mapValue.keySet();
+
+            if (valueType instanceof Class || valueType instanceof ParameterizedType) { // Not
+                Type gType = valueType;
+
+                Type[] types = null;
+                if (valueType instanceof ParameterizedType) {
+                    ParameterizedType pType = (ParameterizedType) valueType;
+                    gType = pType.getRawType();
+                    types = pType.getActualTypeArguments();
+                }
+
+                for (JsonString j : keys) {
+                    Object key = j.getValue();
+                    if(Number.class.isAssignableFrom((Class<?>) keyType)){
+                        key = DataConversionUtils.stringToNumber(j.getValue() ,(Class)keyType);
+                    }
+                    map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null, (Class) gType, types));
+                }
+                return map;
+            } else {
+                throw new JsonValueParseException("Cannot cast JSON to" + rawClass);
+            }
+
+        } else {
+            throw new JsonParseException("JSON key is string, cannot cast to " + keyType);
+        }
+    }
+
+    Object toOtherObjectValue( Field field, Class clazz) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+        // Objects
+        List<Field> fields = ReflectionUtils.getAllInstanceFields(clazz);
+        Set<JsonString> keys = values.keySet();
+        Object object = clazz.newInstance();
+        for (Field f : fields) {
+            Class fClass = f.getType();
+            String name = f.getName();
+            for (JsonString key : keys) {
+                JsonValue jValue = values.get(key);
+                if (key.getValue().equals(name)) {
+                    f.setAccessible(true);
+                    Type t = f.getGenericType();
+                    if (t instanceof Class) {
+                        f.set(object, JsonParser.jsonValueToEntity(jValue, f, fClass, null));
+                    } else if (t instanceof ParameterizedType) {
+                        ParameterizedType pType = (ParameterizedType) t;
+                        f.set(object, JsonParser.jsonValueToEntity(jValue, f, fClass, pType.getActualTypeArguments()));
+                    } else {
+                        throw new JsonValueParseException("Cannot cast JSON to" + clazz);
+                    }
+                    break;
+                }
+            }
+        }
+        return object;
     }
 
 

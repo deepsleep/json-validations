@@ -5,7 +5,7 @@ import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Array;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -149,5 +149,60 @@ public class JsonArray implements JsonValue {
     @Override
     public String toString() {
         return toJsonText();
+    }
+
+
+    Object toJavaArrayValue( Field field, Class<?> classType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+       // List<JsonValue> list = values;
+
+        Class componentType = classType.getComponentType();
+        Object array = Array.newInstance(componentType, values.size());
+
+        Type[] gTypes = null;
+        if (field != null) {
+            Type type = field.getGenericType();
+            if (type instanceof GenericArrayType) {
+                GenericArrayType gType = (GenericArrayType) type;
+                ParameterizedType pType = (ParameterizedType) gType.getGenericComponentType();
+                componentType = (Class) pType.getRawType();
+                gTypes = pType.getActualTypeArguments();
+
+            }
+        }
+        int i = 0;
+        for (JsonValue v : values) {
+            Array.set(array, i, JsonParser.jsonValueToEntity(v, null, componentType, gTypes));
+            i++;
+        }
+        return array;
+    }
+
+     Collection<Object> toJavaCollectionValue( Field field, Class rawClass, Type genericType) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+        // List<JsonValue> jsonValues = jsonValue.getValue();
+        Collection<Object> listObject = null;
+
+        if (rawClass.isInterface() || Modifier.isAbstract(rawClass.getModifiers())) {
+            listObject = new ArrayList<>();
+        } else {
+            listObject = (Collection<Object>) rawClass.newInstance();
+        }
+
+        if (genericType instanceof Class) { // Not
+            Class gType = (Class) genericType;
+            for (JsonValue val : values) {
+                listObject.add(JsonParser.jsonValueToEntity(val, null, gType, null));
+            }
+            return listObject;
+        } else if (genericType instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) genericType;
+            Class rClass = (Class) pType.getRawType();
+            Type[] types = pType.getActualTypeArguments();
+            for (JsonValue val : values) {
+                listObject.add(JsonParser.jsonValueToEntity(val, null, rClass, types));
+            }
+            return listObject;
+        } else {
+            throw new JsonValueParseException("Cannot cast JSON to" + rawClass);
+        }
     }
 }
