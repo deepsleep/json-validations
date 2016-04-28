@@ -152,8 +152,8 @@ public class JsonArray implements JsonValue {
     }
 
 
-    Object toJavaArrayValue( Field field, Class<?> classType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-       // List<JsonValue> list = values;
+    Object toJavaArrayValue(Field field, Class<?> classType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        // List<JsonValue> list = values;
 
         Class componentType = classType.getComponentType();
         Object array = Array.newInstance(componentType, values.size());
@@ -177,30 +177,38 @@ public class JsonArray implements JsonValue {
         return array;
     }
 
-     Collection<Object> toJavaCollectionValue( Field field, Class rawClass, Type genericType) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+    Collection<Object> toJavaCollectionValue(Field field, Class rawClass, Type genericType) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
         // List<JsonValue> jsonValues = jsonValue.getValue();
-        Collection<Object> listObject = null;
+        Collection<Object> collection = null;
 
         if (rawClass.isInterface() || Modifier.isAbstract(rawClass.getModifiers())) {
-            listObject = new ArrayList<>();
+            if (Set.class.isAssignableFrom(rawClass)) {
+                collection = new HashSet<>();
+            } else {
+                collection = new ArrayList<>();
+            }
+
         } else {
-            listObject = (Collection<Object>) rawClass.newInstance();
+            collection = (Collection<Object>) rawClass.newInstance();
         }
 
         if (genericType instanceof Class) { // Not
             Class gType = (Class) genericType;
             for (JsonValue val : values) {
-                listObject.add(JsonParser.jsonValueToEntity(val, null, gType, null));
+               boolean added =  collection.add(JsonParser.jsonValueToEntity(val, null, gType, null));
+                if(added == false){
+                    throw new JsonValueParseException("There is duplicated element found in the Set.");
+                }
             }
-            return listObject;
+            return collection;
         } else if (genericType instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) genericType;
             Class rClass = (Class) pType.getRawType();
             Type[] types = pType.getActualTypeArguments();
             for (JsonValue val : values) {
-                listObject.add(JsonParser.jsonValueToEntity(val, null, rClass, types));
+                collection.add(JsonParser.jsonValueToEntity(val, null, rClass, types));
             }
-            return listObject;
+            return collection;
         } else {
             throw new JsonValueParseException("Cannot cast JSON to" + rawClass);
         }

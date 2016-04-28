@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jfcheng on 4/26/16.
@@ -107,6 +108,26 @@ public class JsonUtilsTest {
         Type[] listParametersTypes = {Integer.class};
         List<Integer> r4 = (List<Integer>) JsonUtils.jsonStringToEntity(arr, List.class, listParametersTypes);
         Assert.assertArrayEquals(expected2, r4.toArray());
+
+        // case3
+        Set<Integer> r5 = (Set<Integer>) JsonUtils.jsonStringToEntity(arr, Set.class, listParametersTypes);
+        Assert.assertArrayEquals(expected2, r5.toArray());
+    }
+
+    @Test
+    public void testDuplicatedValueInSet() throws ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+        String arr = "[1,2,3,2]";
+        Type[] types = {Integer.class};
+        boolean duplicated = false;
+        try {
+            JsonUtils.jsonStringToEntity(arr, Set.class, types);
+        } catch (JsonValueParseException e) {
+            if(e.getMessage().contains("duplicated")){
+                duplicated = true;
+            }
+        }
+        Assert.assertTrue(duplicated);
+
     }
 
     @Test
