@@ -1,5 +1,18 @@
 {
   "name": "xiaoming",
   "age":14,
-  "lucyNumber":[1,2,4,5]
+  "height":175,
+  "luckyNumber":[1,2,4,5],
+  "courses":["Math", "Physics"],
+  "scores":{
+    "Math":88,
+    "Physics":90
+  },
+  "classmates":[
+    {"name":"abc"},
+    {"name":"369"}
+  ],
+  "non-sense":{
+    "abc":123
+  }
 }

@@ -22,7 +22,7 @@ public class JsonBoolean implements JsonValue {
     }
 
     @Override
-    public Boolean toJsonText() {
+    public Boolean toJsonText(boolean ignoreNullField) {
         return value;
     }
 
@@ -40,7 +40,7 @@ public class JsonBoolean implements JsonValue {
 
     @Override
     public String toString() {
-        return String.valueOf(toJsonText());
+        return String.valueOf(toJsonText(DEFAULT_IGNORE_NULL_FIELD));
     }
 
 

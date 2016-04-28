@@ -28,8 +28,8 @@ public class JsonKVPair implements JsonValue {
     }
 
     @Override
-    public String toJsonText() {
-        return name.toJsonText() + JsonControlChar.NAME_SEPARATOR + value.toJsonText();
+    public String toJsonText(boolean ignoreNullField) {
+        return name.toJsonText(ignoreNullField) + JsonControlChar.NAME_SEPARATOR + value.toJsonText(ignoreNullField);
     }
 
 

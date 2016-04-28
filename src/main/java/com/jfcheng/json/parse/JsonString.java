@@ -135,7 +135,7 @@ public class JsonString implements JsonValue {
     }
 
     @Override
-    public String toJsonText() {
+    public String toJsonText(boolean ignoreNullField) {
         return JsonControlChar.QUOTATION_MARK + value + JsonControlChar.QUOTATION_MARK;
     }
 
@@ -187,7 +187,7 @@ public class JsonString implements JsonValue {
 
     @Override
     public String toString() {
-        return toJsonText();
+        return toJsonText(DEFAULT_IGNORE_NULL_FIELD);
     }
 
 
@@ -205,4 +205,6 @@ public class JsonString implements JsonValue {
             return strVal;
         }
     }
+
+
 }

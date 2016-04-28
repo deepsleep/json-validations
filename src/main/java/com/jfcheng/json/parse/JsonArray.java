@@ -77,7 +77,7 @@ public class JsonArray implements JsonValue {
     }
 
     @Override
-    public String toJsonText() {
+    public String toJsonText(boolean ignoreNullField) {
         if (values == null) {
             return "null";
         } else {
@@ -86,14 +86,14 @@ public class JsonArray implements JsonValue {
 
             int i = 0;
             while (i < values.size() - 1) {
-                strBuilder.append(values.get(i).toJsonText());
+                strBuilder.append(values.get(i).toJsonText(ignoreNullField));
                 strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
                 i += 1;
             }
 
             // Add the last one elements
             if (values.size() > 0) {
-                strBuilder.append(values.get(i).toJsonText());
+                strBuilder.append(values.get(i).toJsonText(ignoreNullField));
             }
 
             strBuilder.append(JsonControlChar.ARRAY_END);
@@ -148,7 +148,7 @@ public class JsonArray implements JsonValue {
 
     @Override
     public String toString() {
-        return toJsonText();
+        return toJsonText(DEFAULT_IGNORE_NULL_FIELD);
     }
 
 

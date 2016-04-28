@@ -1,12 +1,25 @@
 package com.jfcheng.json.parse;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by jfcheng on 4/26/16.
  */
 public class Student {
     private String name;
     private Short age;
-    private int[] lucyNumber;
+    private short height;
+    private int[] luckyNumber;
+    private List<Student> classmates;
+    private List<String> courses;
+    private Map<String,Integer> scores;
+    private List<String> emptyStr = new ArrayList<String>();
+    private List<Student> emptyStu = new ArrayList<Student>();
+    private Map<String,Integer> emptyMap = new HashMap<String,Integer>();
+    private List<String> nullList;
 
     public String getName() {
         return name;
@@ -16,11 +29,22 @@ public class Student {
         return age;
     }
 
-    public void printLuckyNumber(){
-        System.out.print("lucyNumber: ");
-        for(int i: lucyNumber){
-            System.out.print(i + ",");
-        }
-        System.out.println();
+
+    public int[] getLucyNumber() {
+        return luckyNumber;
     }
+
+    public List<Student> getClassmates() {
+        return classmates;
+    }
+
+    public List<String> getCourses() {
+        return courses;
+    }
+
+    public Map<String, Integer> getScores() {
+        return scores;
+    }
+
+
 }

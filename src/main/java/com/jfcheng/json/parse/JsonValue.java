@@ -8,6 +8,7 @@ import java.io.Serializable;
  * This is the common interface of a JSON value.
  */
 public interface JsonValue extends Serializable {
+    static final boolean DEFAULT_IGNORE_NULL_FIELD = true;
 
     /**
      * Get the actual value of the json value is representing.
@@ -30,7 +31,15 @@ public interface JsonValue extends Serializable {
      *
      * @return - String
      */
-    public Object toJsonText();
+    public Object toJsonText(boolean ignoreNullField);
+
+    /**
+     * Default to return a json text with a ignoredNullField is true;
+     * @return -String
+     */
+    public default Object toJsonText(){
+        return toJsonText(DEFAULT_IGNORE_NULL_FIELD);
+    }
 
 
 

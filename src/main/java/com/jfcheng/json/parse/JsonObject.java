@@ -97,7 +97,7 @@ public class JsonObject implements JsonValue {
     }
 
     @Override
-    public String toJsonText() {
+    public String toJsonText(boolean ignoreNullField) {
         if (values == null) {
             return "null";
         } else {
@@ -105,15 +105,24 @@ public class JsonObject implements JsonValue {
             strBuilder.append(JsonControlChar.OBJECT_BEGIN);
             Set<JsonString> keys = values.keySet();
 
-            int counter = 1;
+            //int counter = 1;
             for (JsonString key : keys) {
-                strBuilder.append(key.toJsonText());
-                strBuilder.append(JsonControlChar.NAME_SEPARATOR);
-                strBuilder.append(values.get(key).toJsonText());
-                if (counter < values.size()) {
+                String k = key.toJsonText(ignoreNullField);
+                Object v = values.get(key).toJsonText(ignoreNullField);
+
+                if (!"null".equals(v) || !ignoreNullField) {
+                    strBuilder.append(k);
+                    strBuilder.append(JsonControlChar.NAME_SEPARATOR);
+                    strBuilder.append(v);
+                    //if (counter < values.size()) {
                     strBuilder.append(JsonControlChar.VALUE_SEPARATOR);
+                    //}
                 }
-                counter += 1;
+                //counter += 1;
+            }
+            int lastIndex = strBuilder.length()-1;
+            if(strBuilder.charAt(lastIndex) == JsonControlChar.VALUE_SEPARATOR){
+               strBuilder.deleteCharAt(lastIndex);
             }
 
             strBuilder.append(JsonControlChar.OBJECT_END);
@@ -186,11 +195,11 @@ public class JsonObject implements JsonValue {
 
     @Override
     public String toString() {
-        return toJsonText();
+        return toJsonText(DEFAULT_IGNORE_NULL_FIELD);
     }
 
 
-     Map<Object, Object> toJavaMapValue(Field field, Class rawClass, Type keyType, Type valueType) throws JsonValueParseException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    Map<Object, Object> toJavaMapValue(Field field, Class rawClass, Type keyType, Type valueType) throws JsonValueParseException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         if (keyType instanceof Class && (keyType == String.class || (Number.class.isAssignableFrom((Class) keyType)))) {
             Map<JsonString, JsonValue> mapValue = values;
             Map<Object, Object> map = null;
@@ -215,8 +224,8 @@ public class JsonObject implements JsonValue {
 
                 for (JsonString j : keys) {
                     Object key = j.getValue();
-                    if(Number.class.isAssignableFrom((Class<?>) keyType)){
-                        key = DataConversionUtils.stringToNumber(j.getValue() ,(Class)keyType);
+                    if (Number.class.isAssignableFrom((Class<?>) keyType)) {
+                        key = DataConversionUtils.stringToNumber(j.getValue(), (Class) keyType);
                     }
                     map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null, (Class) gType, types));
                 }
@@ -230,7 +239,7 @@ public class JsonObject implements JsonValue {
         }
     }
 
-    Object toOtherObjectValue( Field field, Class clazz) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+    Object toOtherObjectValue(Field field, Class clazz) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
         // Objects
         List<Field> fields = ReflectionUtils.getAllInstanceFields(clazz);
         Set<JsonString> keys = values.keySet();

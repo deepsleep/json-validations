@@ -15,7 +15,7 @@ public class JsonNull implements JsonValue {
     }
 
     @Override
-    public String toJsonText() {
+    public String toJsonText(boolean ignoreNullField) {
         return "null";
     }
 
@@ -43,7 +43,7 @@ public class JsonNull implements JsonValue {
 
     @Override
     public String toString() {
-        return toJsonText();
+        return toJsonText(DEFAULT_IGNORE_NULL_FIELD);
     }
 
 }
