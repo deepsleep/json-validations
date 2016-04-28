@@ -32,12 +32,19 @@ public class JsonUtilsTest {
         System.out.println(j1.toJsonText());
         System.out.println("-----IgnoreNullField is false--------");
         System.out.println(JsonParser.toJsonValue(stu).toJsonText(false));
-        reader.close();
 
-//        Reader r2 = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
-//        JsonValue j2 = JsonParser.parse(r2);
-        // Assert.assertTrue(j1 == j2);
 
+    }
+
+    @Test
+    public void testEquals() throws IOException, JsonValueParseException {
+        Reader r1 = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
+        JsonValue j1 = JsonParser.parse(r1);
+
+        Reader r2 = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
+        JsonValue j2 = JsonParser.parse(r2);
+
+        Assert.assertEquals(j1, j2);
     }
 
 

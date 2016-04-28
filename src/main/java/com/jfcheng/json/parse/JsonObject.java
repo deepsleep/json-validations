@@ -177,21 +177,35 @@ public class JsonObject implements JsonValue {
     }
 
 
-//    @Override
-//    public int hashCode() {
-//        return values.hashCode();
-//    }
-//
-//    @Override
-//    public boolean equals(Object object) {
-//        if (object == this) {
-//            return true;
-//        } else if (object == null || !(object instanceof JsonObject)) {
-//            return false;
-//        } else {
-//            return values.equals(object);
-//        }
-//    }
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        } else if (object == null || !(object instanceof JsonObject)) {
+            return false;
+        } else {
+            Map<JsonString, JsonValue> otherValues = ((JsonObject) object).getValue();
+            if(values.size() != otherValues.size()){
+                return false;
+            }else{
+                Set<JsonString> keys = values.keySet();
+                for(JsonString k: keys){
+                    JsonValue v = values.get(k);
+                    if(otherValues.containsKey(k) && v.equals(otherValues.get(k))){
+                        // k-v equals, do nothing, continues.
+                    }else{
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    }
 
     @Override
     public String toString() {

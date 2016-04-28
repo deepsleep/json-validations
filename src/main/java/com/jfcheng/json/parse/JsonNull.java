@@ -31,15 +31,15 @@ public class JsonNull implements JsonValue {
     }
 
 
-//    public boolean equals(Object o) {
-//        if (o == this) {
-//            return true;
-//        } else if (!(o instanceof JsonNull)) {
-//            return false;
-//        } else {
-//            return o == null;
-//        }
-//    }
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (!(o instanceof JsonNull)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     @Override
     public String toString() {
