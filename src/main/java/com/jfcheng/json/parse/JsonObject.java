@@ -6,6 +6,7 @@ package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
+import com.jfcheng.json.parse.exception.JsonStringParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
 import com.jfcheng.utils.DataConversionUtils;
 import com.jfcheng.utils.ReflectionUtils;
@@ -16,10 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JsonObject implements JsonValue {
     private static final long serialVersionUID = 5521558531152229557L;
@@ -32,6 +30,10 @@ public class JsonObject implements JsonValue {
 
     public JsonObject(Map<JsonString, JsonValue> values) {
         this.values = values;
+    }
+
+    public JsonObject(String jsonText) throws JsonValueParseException {
+        this.values = (Map<JsonString, JsonValue>) JsonParser.parseString(jsonText).getValue();
     }
 
     static JsonObject parse(Reader reader) throws IOException, JsonValueParseException {
@@ -120,9 +122,9 @@ public class JsonObject implements JsonValue {
                 }
                 //counter += 1;
             }
-            int lastIndex = strBuilder.length()-1;
-            if(strBuilder.charAt(lastIndex) == JsonControlChar.VALUE_SEPARATOR){
-               strBuilder.deleteCharAt(lastIndex);
+            int lastIndex = strBuilder.length() - 1;
+            if (strBuilder.charAt(lastIndex) == JsonControlChar.VALUE_SEPARATOR) {
+                strBuilder.deleteCharAt(lastIndex);
             }
 
             strBuilder.append(JsonControlChar.OBJECT_END);
@@ -190,15 +192,15 @@ public class JsonObject implements JsonValue {
             return false;
         } else {
             Map<JsonString, JsonValue> otherValues = ((JsonObject) object).getValue();
-            if(values.size() != otherValues.size()){
+            if (values.size() != otherValues.size()) {
                 return false;
-            }else{
+            } else {
                 Set<JsonString> keys = values.keySet();
-                for(JsonString k: keys){
+                for (JsonString k : keys) {
                     JsonValue v = values.get(k);
-                    if(otherValues.containsKey(k) && v.equals(otherValues.get(k))){
+                    if (otherValues.containsKey(k) && v.equals(otherValues.get(k))) {
                         // k-v equals, do nothing, continues.
-                    }else{
+                    } else {
                         return false;
                     }
                 }
@@ -281,5 +283,174 @@ public class JsonObject implements JsonValue {
         return object;
     }
 
+
+    // Methods to support dynamically operations on a JsonObject
+
+
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
+
+    public int size() {
+        return values.size();
+    }
+
+    public boolean containsKey(String key) throws JsonStringParseException {
+        JsonString jKey = (JsonString) JsonString.toJsonValue(key);
+        return values.containsKey(jKey);
+    }
+
+    public Set<String> keySet() {
+        Set<JsonString> jKeySet = values.keySet();
+        Set<String> keySet = new HashSet<String>();
+        jKeySet.forEach(k -> keySet.add(k.getValue()));
+        return keySet;
+    }
+
+    public Object get(String key) throws JsonStringParseException {
+        JsonString jKey = (JsonString) JsonString.toJsonValue(key);
+        return values.get(jKey).getValue();
+    }
+
+    private JsonValue getJsonValue(String key) throws JsonStringParseException {
+        JsonString jKey = (JsonString) JsonString.toJsonValue(key);
+        return values.get(jKey);
+    }
+
+
+    public JsonObject getJsonObject(String key) throws JsonValueParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonObject) {
+            return (JsonObject) value;
+        } else {
+            throw new JsonValueParseException("The value of " + key + " is not a JsonObject.");
+        }
+    }
+
+
+    public String getString(String key) throws JsonValueParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonString) {
+            return (String) value.getValue();
+        } else {
+            throw new JsonValueParseException("The value of " + key + " is not a string");
+        }
+    }
+
+    public byte getByte(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).byteValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+    public short getShort(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).shortValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+    public int getInt(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).intValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+    public long getLong(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).longValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+
+    public float getFloat(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).floatValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+    public double getDouble(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonNumber) {
+            return ((Number) value.getValue()).doubleValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a number");
+        }
+    }
+
+    public boolean getBoolean(String key) throws JsonStringParseException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonBoolean) {
+            return ((JsonBoolean) value).getValue();
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a boolean");
+        }
+    }
+
+    public Collection getCollection(String key, Class collectionType, Class typeParameter) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonArray) {
+            return ((JsonArray) value).toJavaCollectionValue(null, collectionType,typeParameter);
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a collection");
+        }
+    }
+
+    public Map getMap(String key, Class mapType, Class keyType, Class valueType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        JsonValue value = getJsonValue(key);
+        if (value instanceof JsonObject) {
+            return ((JsonObject) value).toJavaMapValue(null,mapType,keyType,valueType);
+        } else {
+            throw new JsonParseException("The value of " + key + " is not a map");
+        }
+    }
+
+    /**
+     * Put a key-value to the JsonObject if the key is not exist before.
+     * If the key exist, do nothing and return false; else put the k-v into the JsonObject and return true;
+     *
+     * @param key
+     * @param value
+     * @throws JsonValueParseException
+     */
+    public boolean putIfAbsent(String key, Object value) throws JsonValueParseException {
+        JsonString jKey = (JsonString) JsonString.toJsonValue(key);
+        if (values.containsKey(jKey)) {
+            return false;
+        } else {
+            JsonValue jValue = JsonParser.toJsonValue(value);
+            values.put(jKey, jValue);
+            return true;
+        }
+    }
+
+
+    /**
+     * Put a key-value to the JsonObject. If the key was exist, replace the value; else add the key-value
+     * to the JsonObject.
+     *
+     * @param key
+     * @param value
+     * @throws JsonValueParseException
+     */
+    public void put(String key, Object value) throws JsonValueParseException {
+        JsonString jKey = (JsonString) JsonString.toJsonValue(key);
+        JsonValue jValue = JsonParser.toJsonValue(value);
+        values.put(jKey, jValue);
+    }
 
 }

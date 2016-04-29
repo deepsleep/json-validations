@@ -21,6 +21,13 @@ public class Student {
     private Map<String,Integer> emptyMap = new HashMap<String,Integer>();
     private List<String> nullList;
 
+    Student(){
+
+    }
+
+    Student(String name){
+        this.name = name;
+    }
     public String getName() {
         return name;
     }
