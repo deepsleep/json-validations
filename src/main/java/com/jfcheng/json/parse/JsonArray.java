@@ -2,6 +2,9 @@ package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonArrayParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.validation.annotation.AnnotationHelper;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -139,16 +142,16 @@ public class JsonArray implements JsonValue {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o == null || !(o instanceof JsonArray) ) {
+        } else if (o == null || !(o instanceof JsonArray)) {
             return false;
         } else {
             List<JsonValue> otherValues = ((JsonArray) o).getValue();
-            if(values.size() != otherValues.size()){
+            if (values.size() != otherValues.size()) {
                 return false;
-            }else{
+            } else {
 
-                for(int i =0; i< values.size(); i++) {
-                    if(!values.get(i).equals(otherValues.get(i))){
+                for (int i = 0; i < values.size(); i++) {
+                    if (!values.get(i).equals(otherValues.get(i))) {
                         return false;
                     }
                 }
@@ -163,7 +166,7 @@ public class JsonArray implements JsonValue {
     }
 
 
-    Object toJavaArrayValue(Field field, Class<?> classType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    Object toJavaArrayValue(Field field, String fieldName, Class<?> classType, boolean doValidation) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         // List<JsonValue> list = values;
 
         Class componentType = classType.getComponentType();
@@ -182,13 +185,16 @@ public class JsonArray implements JsonValue {
         }
         int i = 0;
         for (JsonValue v : values) {
-            Array.set(array, i, JsonParser.jsonValueToEntity(v, null, componentType, gTypes));
+            Array.set(array, i, JsonParser.jsonValueToEntity(v, null, fieldName,componentType, gTypes, doValidation));
             i++;
+        }
+        if (doValidation) {
+            AnnotationHelper.doCollectionAnnotationValidation(fieldName, array, field.getAnnotations());
         }
         return array;
     }
 
-    Collection<Object> toJavaCollectionValue(Field field, Class rawClass, Type genericType) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+    Collection<Object> toJavaCollectionValue(Field field, String fieldName, Class rawClass, Type genericType, boolean doValidation) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException, InvalidParameterValueException, RequiredFieldNotFoundException {
         // List<JsonValue> jsonValues = jsonValue.getValue();
         Collection<Object> collection = null;
 
@@ -206,10 +212,13 @@ public class JsonArray implements JsonValue {
         if (genericType instanceof Class) { // Not
             Class gType = (Class) genericType;
             for (JsonValue val : values) {
-               boolean added =  collection.add(JsonParser.jsonValueToEntity(val, null, gType, null));
-                if(added == false){
+                boolean added = collection.add(JsonParser.jsonValueToEntity(val, null,fieldName, gType, null, doValidation));
+                if (added == false) {
                     throw new JsonValueParseException("There is duplicated element found in the Set.");
                 }
+            }
+            if ( doValidation) {
+                AnnotationHelper.doCollectionAnnotationValidation(fieldName, collection, field.getAnnotations());
             }
             return collection;
         } else if (genericType instanceof ParameterizedType) {
@@ -217,7 +226,10 @@ public class JsonArray implements JsonValue {
             Class rClass = (Class) pType.getRawType();
             Type[] types = pType.getActualTypeArguments();
             for (JsonValue val : values) {
-                collection.add(JsonParser.jsonValueToEntity(val, null, rClass, types));
+                collection.add(JsonParser.jsonValueToEntity(val, null,fieldName, rClass, types, doValidation));
+            }
+            if (doValidation) {
+                AnnotationHelper.doCollectionAnnotationValidation(fieldName, collection, field.getAnnotations());
             }
             return collection;
         } else {

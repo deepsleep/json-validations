@@ -1,6 +1,8 @@
 package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,16 +22,18 @@ public class JsonUtilsTest {
 
 
     @Test
-    public void testStudent() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testStudent() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
         //System.out.println(JsonParser.parse(reader));
         Student stu = (Student) JsonUtils.jsonTextToEntity(reader, Student.class);
+        System.out.println("stu.c = " + stu.charValue);
         //System.out.println(stu.getAge());
         //System.out.println(stu.getName());
 
         //stu.printLuckyNumber();
         JsonValue j1 = JsonParser.toJsonValue(stu);
-        System.out.println(j1.toJsonText());
+      //  System.out.println(((JsonObject)j1).get("charValue"));
+       // System.out.println(j1.toJsonText());
         System.out.println("-----IgnoreNullField is false--------");
         System.out.println(JsonParser.toJsonValue(stu).toJsonText(false));
 
@@ -49,7 +53,7 @@ public class JsonUtilsTest {
 
 
     @Test
-    public void testOnlyNumberValues() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testOnlyNumberValues() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         String num = "10";
         int i1 = (int) JsonUtils.jsonStringToEntity(num, int.class);
         Integer i2 = (Integer) JsonUtils.jsonStringToEntity(num, Integer.class);
@@ -77,8 +81,10 @@ public class JsonUtilsTest {
         Assert.assertTrue(10.0 == i12);
     }
 
+
+
     @Test
-    public void testOnlyString() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testOnlyString() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         String str = "\"json text string\"";
         String result = (String) JsonUtils.jsonStringToEntity(str, String.class);
         Assert.assertEquals("json text string", result);
@@ -95,7 +101,7 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testOnlyArray() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testOnlyArray() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         String arr = "[1,2,3,4]";
 
         // case 1
@@ -122,7 +128,7 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testDuplicatedValueInSet() throws ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testDuplicatedValueInSet() throws ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         String arr = "[1,2,3,2]";
         Type[] types = {Integer.class};
         boolean duplicated = false;
@@ -138,7 +144,7 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testOnlyMap() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException {
+    public void testOnlyMap() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         String str1 = "{\"1\": 10, \"2\": 20}";
         Type[] mapParametersTypes = {String.class, Integer.class};
         Map r1 = (Map) JsonUtils.jsonStringToEntity(str1, Map.class, mapParametersTypes);

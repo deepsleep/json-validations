@@ -1,8 +1,10 @@
 {
+  "charValue":"d",
   "name": "xiaoming",
-  "age":14,
+  "age":"14",
   "height":175,
   "luckyNumber":[1,2,4,5],
+
   "courses":["Math", "Physics"],
   "scores":{
     "Math":88,

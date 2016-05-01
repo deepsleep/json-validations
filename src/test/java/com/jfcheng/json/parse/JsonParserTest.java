@@ -257,7 +257,7 @@ public class JsonParserTest {
     @Test
     public void testJsonOrgSuitFail7() throws IOException {
         Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail7.json");
-        Object jsonValue = null;
+        Object jsonValue;
         boolean isFail = false;
         try {
             jsonValue = JsonParser.parse(reader);

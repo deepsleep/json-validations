@@ -9,6 +9,8 @@ import java.util.Map;
  * Created by jfcheng on 4/26/16.
  */
 public class Student {
+    char charValue;
+
     private String name;
     private Short age;
     private short height;
@@ -20,6 +22,8 @@ public class Student {
     private List<Student> emptyStu = new ArrayList<Student>();
     private Map<String,Integer> emptyMap = new HashMap<String,Integer>();
     private List<String> nullList;
+
+
 
     Student(){
 
@@ -52,6 +56,8 @@ public class Student {
     public Map<String, Integer> getScores() {
         return scores;
     }
+
+
 
 
 }

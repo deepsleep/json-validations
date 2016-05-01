@@ -44,8 +44,12 @@ public class JsonBoolean implements JsonValue {
     }
 
 
-    Object toJavaBooleanValue(Field field) {
-       return value;
+    Object toJavaBooleanValue(Field field, boolean doValidation) {
+        if (field != null && doValidation) {
+            //DO some validation if need.
+        }
+
+        return value;
     }
 
 

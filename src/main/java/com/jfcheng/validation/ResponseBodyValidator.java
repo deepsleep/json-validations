@@ -1,7 +1,7 @@
 package com.jfcheng.validation;
 
 import com.jfcheng.utils.ReflectionUtils;
-import com.jfcheng.validation.annotation.RequestAnnotationHelper;
+import com.jfcheng.validation.annotation.AnnotationHelper;
 import com.jfcheng.validation.exception.ValidationFailException;
 
 import java.lang.reflect.Array;
@@ -152,7 +152,7 @@ public class ResponseBodyValidator extends AbstractObjectValidator {
                     f.setAccessible(true);
                     try {
                         fieldValue = f.get(value);
-                        if (fieldValue != null && !RequestAnnotationHelper.isResponseParameterIgnore(fieldValue, f.getAnnotations())) {
+                        if (fieldValue != null && !AnnotationHelper.isResponseParameterIgnore(fieldValue, f.getAnnotations())) {
                             f.set(responseObj, doValueValidation(fieldValue, f));
                         }
                     } catch (IllegalAccessException e) {

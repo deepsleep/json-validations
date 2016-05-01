@@ -1,6 +1,9 @@
 package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonStringParseException;
+import com.jfcheng.utils.DataConversionUtils;
+import com.jfcheng.validation.annotation.AnnotationHelper;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -192,13 +195,24 @@ public class JsonString implements JsonValue {
 
 
 
-    Object toJavaStringValue( Field field, Class<?> clazz) {
+    Object toJavaStringValue( Field field, String fieldName, Class<?> clazz,boolean doValidation) throws InvalidParameterValueException {
         String strVal = value;
         if (clazz == String.class) {
+            if ( field != null && doValidation) {
+                AnnotationHelper.doStringAnnotationValidation(fieldName, strVal, field.getAnnotations());
+            }
             return strVal;
-        } else if ((clazz == Character.class || clazz == Character.TYPE) && strVal.length() == 1) {
+        }else if ((clazz == Character.class || clazz == Character.TYPE) && strVal.length() == 1) {
+           // char tmp = strVal.charAt(0);
+           // System.out.println(strVal.charAt(0));
             return strVal.charAt(0);
-        } else if (clazz.isEnum()) {
+        }else if(DataConversionUtils.isNumberType(clazz)){
+            Object num = DataConversionUtils.stringToNumber(strVal,clazz);
+            if (field != null && doValidation) {
+                AnnotationHelper.doNumberAnnotationValidation(fieldName, num, field.getAnnotations());
+            }
+            return num;
+        }  else if (clazz.isEnum()) {
             Class<Enum> eClass = (Class<Enum>) clazz;
             return Enum.valueOf(eClass, strVal);
         } else {

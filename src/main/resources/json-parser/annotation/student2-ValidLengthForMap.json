@@ -1,0 +1,12 @@
+{
+  "name":"James",
+  "id": 1010,
+  "age":14,
+  "height":"180",
+  "classLevel":1,
+  "courses":["Physics","Math"],
+  "scores":[90,100],
+  "scoreMap":{
+    "Physics":88
+  }
+}

@@ -2,7 +2,7 @@ package com.jfcheng.validation;
 
 import com.jfcheng.utils.ReflectionUtils;
 import com.jfcheng.validation.annotation.JsonName;
-import com.jfcheng.validation.annotation.RequestAnnotationHelper;
+import com.jfcheng.validation.annotation.AnnotationHelper;
 import com.jfcheng.validation.exception.ValidationFailException;
 
 import java.lang.reflect.Array;
@@ -78,7 +78,6 @@ public class ObjectToJsonStringValidator {
         } else {
             return f.getName();
         }
-
     }
 
 
@@ -268,7 +267,7 @@ public class ObjectToJsonStringValidator {
             if (fields != null && fields.size() > 0) {
 
                 for (Field f : fields) {
-                    if (RequestAnnotationHelper.isRequestParameterIgnore(null, f.getAnnotations()) == false) {
+                    if (AnnotationHelper.isRequestParameterIgnore(null, f.getAnnotations()) == false) {
                         f.setAccessible(true);
                         Object value = null;
                         try {

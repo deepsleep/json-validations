@@ -2,6 +2,8 @@ package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
 import com.jfcheng.utils.DataConversionUtils;
+import com.jfcheng.validation.annotation.AnnotationHelper;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
 
 import java.lang.reflect.Field;
 
@@ -62,7 +64,10 @@ public class JsonNumber implements JsonValue {
     }
 
 
-    Object toJavaNumberValue(Field field, Class<?> clazz) {
+    Object toJavaNumberValue(Field field, String fieldName, Class<?> clazz, boolean doValidation) throws InvalidParameterValueException {
+        if (field!= null && doValidation) {
+            AnnotationHelper.doNumberAnnotationValidation(fieldName, value, field.getAnnotations());
+        }
         return DataConversionUtils.numberToPrimitive(value, clazz);
     }
 }

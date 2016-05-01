@@ -10,6 +10,9 @@ import com.jfcheng.json.parse.exception.JsonStringParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
 import com.jfcheng.utils.DataConversionUtils;
 import com.jfcheng.utils.ReflectionUtils;
+import com.jfcheng.validation.annotation.AnnotationHelper;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -215,10 +218,10 @@ public class JsonObject implements JsonValue {
     }
 
 
-    Map<Object, Object> toJavaMapValue(Field field, Class rawClass, Type keyType, Type valueType) throws JsonValueParseException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    Map<Object, Object> toJavaMapValue(Field field, String fieldName, Class rawClass, Type keyType, Type valueType, boolean doValidation) throws JsonValueParseException, IllegalAccessException, InstantiationException, ClassNotFoundException, RequiredFieldNotFoundException, InvalidParameterValueException {
         if (keyType instanceof Class && (keyType == String.class || (Number.class.isAssignableFrom((Class) keyType)))) {
             Map<JsonString, JsonValue> mapValue = values;
-            Map<Object, Object> map = null;
+            Map<Object, Object> map;
 
             if (rawClass.isInterface() || Modifier.isAbstract(rawClass.getModifiers())) {
                 map = new HashMap<>();
@@ -243,8 +246,13 @@ public class JsonObject implements JsonValue {
                     if (Number.class.isAssignableFrom((Class<?>) keyType)) {
                         key = DataConversionUtils.stringToNumber(j.getValue(), (Class) keyType);
                     }
-                    map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null, (Class) gType, types));
+                    map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null,String.valueOf(key), (Class) gType, types, doValidation));
                 }
+
+                if ( doValidation) {
+                    AnnotationHelper.doCollectionAnnotationValidation(fieldName,map, field.getAnnotations());
+                }
+
                 return map;
             } else {
                 throw new JsonValueParseException("Cannot cast JSON to" + rawClass);
@@ -255,30 +263,32 @@ public class JsonObject implements JsonValue {
         }
     }
 
-    Object toOtherObjectValue(Field field, Class clazz) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException {
+    Object toOtherObjectValue(Field field, String fieldName, Class clazz, boolean doValidation) throws IllegalAccessException, InstantiationException, JsonValueParseException, ClassNotFoundException, RequiredFieldNotFoundException, InvalidParameterValueException {
         // Objects
         List<Field> fields = ReflectionUtils.getAllInstanceFields(clazz);
         Set<JsonString> keys = values.keySet();
         Object object = clazz.newInstance();
         for (Field f : fields) {
             Class fClass = f.getType();
-            String name = f.getName();
-            for (JsonString key : keys) {
-                JsonValue jValue = values.get(key);
-                if (key.getValue().equals(name)) {
-                    f.setAccessible(true);
-                    Type t = f.getGenericType();
-                    if (t instanceof Class) {
-                        f.set(object, JsonParser.jsonValueToEntity(jValue, f, fClass, null));
-                    } else if (t instanceof ParameterizedType) {
-                        ParameterizedType pType = (ParameterizedType) t;
-                        f.set(object, JsonParser.jsonValueToEntity(jValue, f, fClass, pType.getActualTypeArguments()));
-                    } else {
-                        throw new JsonValueParseException("Cannot cast JSON to" + clazz);
-                    }
-                    break;
+            String name = AnnotationHelper.getFieldName(f);
+            JsonString key = (JsonString) JsonString.toJsonValue(name);
+            JsonValue jValue = values.get(key);
+
+            if (jValue != null && jValue.getValue() != null) {
+                f.setAccessible(true);
+                Type t = f.getGenericType();
+                if (t instanceof Class) {
+                    f.set(object, JsonParser.jsonValueToEntity(jValue, f, name, fClass, null, doValidation));
+                } else if (t instanceof ParameterizedType) {
+                    ParameterizedType pType = (ParameterizedType) t;
+                    f.set(object, JsonParser.jsonValueToEntity(jValue, f,name, fClass, pType.getActualTypeArguments(), doValidation));
+                } else {
+                    throw new JsonValueParseException("Cannot cast JSON to" + clazz);
                 }
+            } else if ((jValue == null||jValue.getValue() == null) && doValidation) {
+                AnnotationHelper.doRequiredAnnotationValidation(name, jValue, f.getAnnotations());
             }
+
         }
         return object;
     }
@@ -401,19 +411,19 @@ public class JsonObject implements JsonValue {
         }
     }
 
-    public Collection getCollection(String key, Class collectionType, Class typeParameter) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public Collection getCollection(String key, Class collectionType, Class typeParameter) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         JsonValue value = getJsonValue(key);
         if (value instanceof JsonArray) {
-            return ((JsonArray) value).toJavaCollectionValue(null, collectionType,typeParameter);
+            return ((JsonArray) value).toJavaCollectionValue(null, null, collectionType, typeParameter, false);
         } else {
             throw new JsonParseException("The value of " + key + " is not a collection");
         }
     }
 
-    public Map getMap(String key, Class mapType, Class keyType, Class valueType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public Map getMap(String key, Class mapType, Class keyType, Class valueType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         JsonValue value = getJsonValue(key);
         if (value instanceof JsonObject) {
-            return ((JsonObject) value).toJavaMapValue(null,mapType,keyType,valueType);
+            return ((JsonObject) value).toJavaMapValue(null, null, mapType, keyType, valueType, false);
         } else {
             throw new JsonParseException("The value of " + key + " is not a map");
         }

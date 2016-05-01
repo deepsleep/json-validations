@@ -1,6 +1,8 @@
 package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +14,7 @@ import java.util.*;
 public class JsonObjectTest {
 
     @Test
-    public void testPutAndGet() throws JsonValueParseException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void testPutAndGet() throws JsonValueParseException, InstantiationException, IllegalAccessException, ClassNotFoundException, RequiredFieldNotFoundException, InvalidParameterValueException {
         final String numKey = "numberValue";
         JsonObject jsonObj = new JsonObject();
         jsonObj.put(numKey, 1);
@@ -41,7 +43,6 @@ public class JsonObjectTest {
         Assert.assertEquals("{}", obj.toJsonText());
 
 
-
         List<Object> list = (List<Object>) jsonObj.getCollection("arrayValue", List.class, Object.class);
         Assert.assertArrayEquals(array,list.toArray());
 
@@ -65,6 +66,14 @@ public class JsonObjectTest {
         String stuNewVal = "newValue";
         jsonObj.put("stu", stuNewVal);
         Assert.assertEquals(stuNewVal, jsonObj.getString("stu"));
+    }
+
+    @Test
+    public void testChar() throws JsonValueParseException {
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.put("char", 'd');
+        Object value = jsonObj.get("char");
+        Assert.assertEquals(value, "d");
     }
 
     @Test

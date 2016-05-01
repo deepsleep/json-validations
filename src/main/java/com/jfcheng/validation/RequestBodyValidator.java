@@ -1,7 +1,7 @@
 package com.jfcheng.validation;
 
 import com.jfcheng.utils.ReflectionUtils;
-import com.jfcheng.validation.annotation.RequestAnnotationHelper;
+import com.jfcheng.validation.annotation.AnnotationHelper;
 import com.jfcheng.validation.exception.InvalidParameterValueException;
 import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 import com.jfcheng.validation.exception.ValidationFailException;
@@ -31,7 +31,7 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Object doNullValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doRequiredAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doRequiredAnnotationValidation(field.getName(), value, field.getAnnotations());
         return null;
     }
 
@@ -42,7 +42,7 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Number doNumberValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doNumberAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doNumberAnnotationValidation(field.getName(),value, field.getAnnotations());
         return (Number) value;
     }
 
@@ -53,7 +53,7 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected String doStringValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doStringAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doStringAnnotationValidation(field.getName(), value, field.getAnnotations());
         return (String) value;
     }
 
@@ -64,7 +64,7 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Object doArrayValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doCollectionAnnotationValidation(field.getName(), value, field.getAnnotations());
         int length = Array.getLength(value);
         for (int i = 0; i < length; i++) {
             doValueValidation(Array.get(value, i), null);
@@ -74,14 +74,14 @@ public class RequestBodyValidator extends AbstractObjectValidator {
 
     @Override
     protected Object doListValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doCollectionAnnotationValidation(field.getName(), value, field.getAnnotations());
         doCollectionValidation(value, field);
         return value;
     }
 
     @Override
     protected Object doSetValidation(Object value, Field field) throws ValidationFailException {
-        RequestAnnotationHelper.doListAnnotationValidation(value, field.getAnnotations());
+        AnnotationHelper.doCollectionAnnotationValidation(field.getName(), value, field.getAnnotations());
         doCollectionValidation(value, field);
         return value;
     }

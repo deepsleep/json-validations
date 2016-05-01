@@ -2,6 +2,8 @@ package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
+import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -126,24 +128,24 @@ public class JsonParser {
         return new JsonParserResult(jsonValue, controlChar);
     }
 
-    static Object jsonValueToEntity(JsonValue jsonValue, Field field, Class rawClass, Type[] parameterTypes) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    static Object jsonValueToEntity(JsonValue jsonValue, Field field,String fieldName,  Class rawClass, Type[] parameterTypes,boolean doValidation) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException, InvalidParameterValueException, RequiredFieldNotFoundException {
         if (jsonValue instanceof JsonNull) {
             return null;
         } else if (jsonValue instanceof JsonBoolean) {
             JsonBoolean jBoolean = (JsonBoolean) jsonValue;
-            return jBoolean.toJavaBooleanValue(field);
+            return jBoolean.toJavaBooleanValue(field, doValidation);
         } else if (jsonValue instanceof JsonNumber) {
             JsonNumber jNumber = (JsonNumber) jsonValue;
-            return jNumber.toJavaNumberValue(field,rawClass);
+            return jNumber.toJavaNumberValue(field,fieldName, rawClass, doValidation);
         } else if (jsonValue instanceof JsonString) {
             JsonString jString = (JsonString) jsonValue;
-            return jString.toJavaStringValue(field,rawClass);
+            return jString.toJavaStringValue(field,fieldName, rawClass, doValidation);
         } else if (jsonValue instanceof JsonArray) {
             JsonArray jArray = (JsonArray)jsonValue;
             if (rawClass.isArray()) {
-                return jArray.toJavaArrayValue(field,rawClass);
+                return jArray.toJavaArrayValue(field,fieldName, rawClass, doValidation);
             } else if (Collection.class.isAssignableFrom(rawClass) && parameterTypes != null && parameterTypes.length == 1) {
-                return jArray.toJavaCollectionValue(field,rawClass,parameterTypes[0]);
+                return jArray.toJavaCollectionValue(field,fieldName, rawClass,parameterTypes[0],doValidation);
             } else {
                 throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
             }
@@ -151,12 +153,12 @@ public class JsonParser {
             JsonObject jObject = (JsonObject) jsonValue;
             if (Map.class.isAssignableFrom(rawClass)) {
                 if (parameterTypes != null && parameterTypes.length == 2) {
-                    return jObject.toJavaMapValue(field,rawClass,parameterTypes[0],parameterTypes[1]);
+                    return jObject.toJavaMapValue(field,fieldName, rawClass,parameterTypes[0],parameterTypes[1],doValidation);
                 } else {
                     throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
                 }
             } else {
-                return jObject.toOtherObjectValue(field,rawClass);
+                return jObject.toOtherObjectValue(field,fieldName, rawClass,doValidation);
             }
         } else {
             throw new JsonParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);

@@ -14,4 +14,6 @@ public @interface MethodValidation {
 
     boolean isRequest();
 
+    boolean isResponse();
+
 }
