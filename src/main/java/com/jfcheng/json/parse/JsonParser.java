@@ -2,8 +2,9 @@ package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
-import com.jfcheng.validation.exception.InvalidParameterValueException;
-import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
+import com.jfcheng.json.annotation.AnnotationHelper;
+import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
+import com.jfcheng.json.annotation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -70,27 +71,27 @@ public class JsonParser {
 
 
     public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
-        if (obj == null) {
-            return JsonNull.toJsonValue(obj);
-        } else if (obj instanceof JsonValue) {
-            return (JsonValue) obj;
-        } else if (obj instanceof String || obj instanceof Character || obj instanceof Enum) {
-            return JsonString.toJsonValue(obj);
-        } else if (obj instanceof Number) {
-            return JsonNumber.toJsonValue(obj);
-        } else if (obj instanceof Boolean) {
-            return JsonBoolean.toJsonValue(obj);
-        } else if (obj.getClass().isArray()) {
-            return JsonArray.toJsonValue(obj);
-        } else if (obj instanceof List) {
-            return JsonArray.toJsonValue(obj);
-        } else if (obj instanceof Set) {
-            return JsonArray.toJsonValue(obj);
-        } else if (obj instanceof Map) {
-            return JsonObject.toJsonValue(obj);
-        } else {
-            return JsonObject.toJsonValue(obj);
-        }
+            if (obj == null) {
+                return JsonNull.toJsonValue(obj);
+            } else if (obj instanceof JsonValue) {
+                return (JsonValue) obj;
+            } else if (obj instanceof String || obj instanceof Character || obj instanceof Enum) {
+                return JsonString.toJsonValue(obj);
+            } else if (obj instanceof Number) {
+                return JsonNumber.toJsonValue(obj);
+            } else if (obj instanceof Boolean) {
+                return JsonBoolean.toJsonValue(obj);
+            } else if (obj.getClass().isArray()) {
+                return JsonArray.toJsonValue(obj);
+            } else if (obj instanceof List) {
+                return JsonArray.toJsonValue(obj);
+            } else if (obj instanceof Set) {
+                return JsonArray.toJsonValue(obj);
+            } else if (obj instanceof Map) {
+                return JsonObject.toJsonValue(obj);
+            } else {
+                return JsonObject.toJsonValue(obj);
+            }
     }
 
     static JsonParserResult parse(Reader reader, int lastCharRead) throws JsonValueParseException, IOException {
@@ -128,40 +129,44 @@ public class JsonParser {
         return new JsonParserResult(jsonValue, controlChar);
     }
 
-    static Object jsonValueToEntity(JsonValue jsonValue, Field field,String fieldName,  Class rawClass, Type[] parameterTypes,boolean doValidation) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException, InvalidParameterValueException, RequiredFieldNotFoundException {
-        if (jsonValue instanceof JsonNull) {
+    static Object jsonValueToEntity(JsonValue jsonValue, Field field, String fieldName, Class rawClass, Type[] parameterTypes, boolean doValidation) throws JsonValueParseException, ClassNotFoundException, IllegalAccessException, InstantiationException, InvalidParameterValueException, RequiredFieldNotFoundException {
+        if (field != null && AnnotationHelper.isJsonToEntityIgnore(field)) {
             return null;
-        } else if (jsonValue instanceof JsonBoolean) {
-            JsonBoolean jBoolean = (JsonBoolean) jsonValue;
-            return jBoolean.toJavaBooleanValue(field, doValidation);
-        } else if (jsonValue instanceof JsonNumber) {
-            JsonNumber jNumber = (JsonNumber) jsonValue;
-            return jNumber.toJavaNumberValue(field,fieldName, rawClass, doValidation);
-        } else if (jsonValue instanceof JsonString) {
-            JsonString jString = (JsonString) jsonValue;
-            return jString.toJavaStringValue(field,fieldName, rawClass, doValidation);
-        } else if (jsonValue instanceof JsonArray) {
-            JsonArray jArray = (JsonArray)jsonValue;
-            if (rawClass.isArray()) {
-                return jArray.toJavaArrayValue(field,fieldName, rawClass, doValidation);
-            } else if (Collection.class.isAssignableFrom(rawClass) && parameterTypes != null && parameterTypes.length == 1) {
-                return jArray.toJavaCollectionValue(field,fieldName, rawClass,parameterTypes[0],doValidation);
-            } else {
-                throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
-            }
-        } else if (jsonValue instanceof JsonObject) {
-            JsonObject jObject = (JsonObject) jsonValue;
-            if (Map.class.isAssignableFrom(rawClass)) {
-                if (parameterTypes != null && parameterTypes.length == 2) {
-                    return jObject.toJavaMapValue(field,fieldName, rawClass,parameterTypes[0],parameterTypes[1],doValidation);
+        } else {
+            if (jsonValue instanceof JsonNull) {
+                return null;
+            } else if (jsonValue instanceof JsonBoolean) {
+                JsonBoolean jBoolean = (JsonBoolean) jsonValue;
+                return jBoolean.toJavaBooleanValue(field, doValidation);
+            } else if (jsonValue instanceof JsonNumber) {
+                JsonNumber jNumber = (JsonNumber) jsonValue;
+                return jNumber.toJavaNumberValue(field, fieldName, rawClass, doValidation);
+            } else if (jsonValue instanceof JsonString) {
+                JsonString jString = (JsonString) jsonValue;
+                return jString.toJavaStringValue(field, fieldName, rawClass, doValidation);
+            } else if (jsonValue instanceof JsonArray) {
+                JsonArray jArray = (JsonArray) jsonValue;
+                if (rawClass.isArray()) {
+                    return jArray.toJavaArrayValue(field, fieldName, rawClass, doValidation);
+                } else if (Collection.class.isAssignableFrom(rawClass) && parameterTypes != null && parameterTypes.length == 1) {
+                    return jArray.toJavaCollectionValue(field, fieldName, rawClass, parameterTypes[0], doValidation);
                 } else {
                     throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
                 }
+            } else if (jsonValue instanceof JsonObject) {
+                JsonObject jObject = (JsonObject) jsonValue;
+                if (Map.class.isAssignableFrom(rawClass)) {
+                    if (parameterTypes != null && parameterTypes.length == 2) {
+                        return jObject.toJavaMapValue(field, fieldName, rawClass, parameterTypes[0], parameterTypes[1], doValidation);
+                    } else {
+                        throw new JsonValueParseException("Cannot cast to class " + rawClass + " with types " + parameterTypes);
+                    }
+                } else {
+                    return jObject.toOtherObjectValue(field, fieldName, rawClass, doValidation);
+                }
             } else {
-                return jObject.toOtherObjectValue(field,fieldName, rawClass,doValidation);
+                throw new JsonParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);
             }
-        } else {
-            throw new JsonParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);
         }
 
     }

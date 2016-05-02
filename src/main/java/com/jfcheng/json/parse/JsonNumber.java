@@ -1,9 +1,9 @@
 package com.jfcheng.json.parse;
 
 import com.google.gson.JsonParseException;
-import com.jfcheng.utils.DataConversionUtils;
-import com.jfcheng.validation.annotation.AnnotationHelper;
-import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.json.utils.DataConversionUtils;
+import com.jfcheng.json.annotation.AnnotationHelper;
+import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
 
 import java.lang.reflect.Field;
 

@@ -2,9 +2,9 @@ package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonArrayParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
-import com.jfcheng.validation.annotation.AnnotationHelper;
-import com.jfcheng.validation.exception.InvalidParameterValueException;
-import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
+import com.jfcheng.json.annotation.AnnotationHelper;
+import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
+import com.jfcheng.json.annotation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;

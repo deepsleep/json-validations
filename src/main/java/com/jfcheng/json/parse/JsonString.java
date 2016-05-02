@@ -1,9 +1,9 @@
 package com.jfcheng.json.parse;
 
 import com.jfcheng.json.parse.exception.JsonStringParseException;
-import com.jfcheng.utils.DataConversionUtils;
-import com.jfcheng.validation.annotation.AnnotationHelper;
-import com.jfcheng.validation.exception.InvalidParameterValueException;
+import com.jfcheng.json.utils.DataConversionUtils;
+import com.jfcheng.json.annotation.AnnotationHelper;
+import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
 
 import java.io.IOException;
 import java.io.Reader;

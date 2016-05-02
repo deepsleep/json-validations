@@ -8,11 +8,11 @@ import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
 import com.jfcheng.json.parse.exception.JsonStringParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
-import com.jfcheng.utils.DataConversionUtils;
-import com.jfcheng.utils.ReflectionUtils;
-import com.jfcheng.validation.annotation.AnnotationHelper;
-import com.jfcheng.validation.exception.InvalidParameterValueException;
-import com.jfcheng.validation.exception.RequiredFieldNotFoundException;
+import com.jfcheng.json.utils.DataConversionUtils;
+import com.jfcheng.json.utils.ReflectionUtils;
+import com.jfcheng.json.annotation.AnnotationHelper;
+import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
+import com.jfcheng.json.annotation.exception.RequiredFieldNotFoundException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -163,18 +163,21 @@ public class JsonObject implements JsonValue {
             if (fields != null && fields.size() > 0) {
 
                 for (Field f : fields) {
-                    f.setAccessible(true);
-                    Object fValue = null;
-                    try {
-                        fValue = f.get(obj);
-                    } catch (IllegalAccessException e) {
-                        new JsonObjectParseException(e.getMessage());
+                    if (AnnotationHelper.isEntityToJsonIgnore(f)) {
+                        continue; // ignore this field
+                    } else {
+                        f.setAccessible(true);
+                        Object fValue = null;
+                        try {
+                            fValue = f.get(obj);
+                        } catch (IllegalAccessException e) {
+                            new JsonObjectParseException(e.getMessage());
+                        }
+                        String fieldName = f.getName();
+                        JsonString jsonStr = (JsonString) JsonString.toJsonValue(fieldName);
+                        JsonValue jsonValue = JsonParser.toJsonValue(fValue);
+                        values.put(jsonStr, jsonValue);
                     }
-                    String fieldName = f.getName();
-                    JsonString jsonStr = (JsonString) JsonString.toJsonValue(fieldName);
-                    JsonValue jsonValue = JsonParser.toJsonValue(fValue);
-                    values.put(jsonStr, jsonValue);
-
                 }
             }
             return new JsonObject(values);
@@ -246,11 +249,11 @@ public class JsonObject implements JsonValue {
                     if (Number.class.isAssignableFrom((Class<?>) keyType)) {
                         key = DataConversionUtils.stringToNumber(j.getValue(), (Class) keyType);
                     }
-                    map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null,String.valueOf(key), (Class) gType, types, doValidation));
+                    map.put(key, JsonParser.jsonValueToEntity(mapValue.get(j), null, String.valueOf(key), (Class) gType, types, doValidation));
                 }
 
-                if ( doValidation) {
-                    AnnotationHelper.doCollectionAnnotationValidation(fieldName,map, field.getAnnotations());
+                if (doValidation) {
+                    AnnotationHelper.doCollectionAnnotationValidation(fieldName, map, field.getAnnotations());
                 }
 
                 return map;
@@ -281,11 +284,11 @@ public class JsonObject implements JsonValue {
                     f.set(object, JsonParser.jsonValueToEntity(jValue, f, name, fClass, null, doValidation));
                 } else if (t instanceof ParameterizedType) {
                     ParameterizedType pType = (ParameterizedType) t;
-                    f.set(object, JsonParser.jsonValueToEntity(jValue, f,name, fClass, pType.getActualTypeArguments(), doValidation));
+                    f.set(object, JsonParser.jsonValueToEntity(jValue, f, name, fClass, pType.getActualTypeArguments(), doValidation));
                 } else {
                     throw new JsonValueParseException("Cannot cast JSON to" + clazz);
                 }
-            } else if ((jValue == null||jValue.getValue() == null) && doValidation) {
+            } else if ((jValue == null || jValue.getValue() == null) && doValidation) {
                 AnnotationHelper.doRequiredAnnotationValidation(name, jValue, f.getAnnotations());
             }
 
@@ -319,7 +322,13 @@ public class JsonObject implements JsonValue {
 
     public Object get(String key) throws JsonStringParseException {
         JsonString jKey = (JsonString) JsonString.toJsonValue(key);
-        return values.get(jKey).getValue();
+
+        JsonValue jValue = values.get(jKey);
+        if (jValue != null) {
+            return jValue.getValue();
+        } else {
+            return null;
+        }
     }
 
     private JsonValue getJsonValue(String key) throws JsonStringParseException {
@@ -330,102 +339,146 @@ public class JsonObject implements JsonValue {
 
     public JsonObject getJsonObject(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonObject) {
-            return (JsonObject) value;
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonValueParseException("The value of " + key + " is not a JsonObject.");
+            if (value instanceof JsonObject) {
+                return (JsonObject) value;
+            } else {
+                throw new JsonValueParseException("The value of " + key + " is not a JsonObject.");
+            }
         }
     }
 
 
     public String getString(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonString) {
-            return (String) value.getValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonValueParseException("The value of " + key + " is not a string");
+            if (value instanceof JsonString) {
+                return (String) value.getValue();
+            } else {
+                throw new JsonValueParseException("The value of " + key + " is not a string");
+            }
         }
     }
 
-    public byte getByte(String key) throws JsonStringParseException {
+    public Byte getByte(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).byteValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).byteValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
-    public short getShort(String key) throws JsonStringParseException {
+    public Short getShort(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).shortValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).shortValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
-    public int getInt(String key) throws JsonStringParseException {
+    public Integer getInt(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).intValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).intValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
-    public long getLong(String key) throws JsonStringParseException {
+    public Long getLong(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).longValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).longValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
 
-    public float getFloat(String key) throws JsonStringParseException {
+    public Float getFloat(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).floatValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).floatValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
-    public double getDouble(String key) throws JsonStringParseException {
+    public Double getDouble(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonNumber) {
-            return ((Number) value.getValue()).doubleValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a number");
+            if (value instanceof JsonNumber) {
+                return ((Number) value.getValue()).doubleValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a number");
+            }
         }
     }
 
-    public boolean getBoolean(String key) throws JsonStringParseException {
+    public Boolean getBoolean(String key) throws JsonStringParseException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonBoolean) {
-            return ((JsonBoolean) value).getValue();
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a boolean");
+            if (value instanceof JsonBoolean) {
+                return ((JsonBoolean) value).getValue();
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a boolean");
+            }
         }
     }
 
     public Collection getCollection(String key, Class collectionType, Class typeParameter) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonArray) {
-            return ((JsonArray) value).toJavaCollectionValue(null, null, collectionType, typeParameter, false);
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a collection");
+            if (value instanceof JsonArray) {
+                return ((JsonArray) value).toJavaCollectionValue(null, null, collectionType, typeParameter, false);
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a collection");
+            }
         }
     }
 
     public Map getMap(String key, Class mapType, Class keyType, Class valueType) throws JsonValueParseException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
         JsonValue value = getJsonValue(key);
-        if (value instanceof JsonObject) {
-            return ((JsonObject) value).toJavaMapValue(null, null, mapType, keyType, valueType, false);
+        if (value == null) {
+            return null;
         } else {
-            throw new JsonParseException("The value of " + key + " is not a map");
+            if (value instanceof JsonObject) {
+                return ((JsonObject) value).toJavaMapValue(null, null, mapType, keyType, valueType, false);
+            } else {
+                throw new JsonParseException("The value of " + key + " is not a map");
+            }
         }
     }
 
