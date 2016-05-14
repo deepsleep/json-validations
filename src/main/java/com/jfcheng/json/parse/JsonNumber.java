@@ -1,6 +1,6 @@
 package com.jfcheng.json.parse;
 
-import com.google.gson.JsonParseException;
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 import com.jfcheng.json.utils.DataConversionUtils;
 import com.jfcheng.json.annotation.AnnotationHelper;
 import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
@@ -31,7 +31,7 @@ public class JsonNumber implements JsonValue {
     }
 
 
-    public static JsonValue toJsonValue(Object obj) throws JsonParseException {
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
         if (obj == null) {
             return new JsonNull();
         } else if (obj instanceof JsonValue) {
@@ -39,7 +39,7 @@ public class JsonNumber implements JsonValue {
         } else if (obj instanceof Number) {
             return new JsonNumber((Number) obj);
         } else {
-            throw new JsonParseException("Cannot cast " + obj.getClass() + " to JsonNumber");
+            throw new JsonValueParseException("Cannot cast " + obj.getClass() + " to JsonNumber");
         }
     }
 

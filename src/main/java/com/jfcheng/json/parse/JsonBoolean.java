@@ -1,6 +1,6 @@
 package com.jfcheng.json.parse;
 
-import com.google.gson.JsonParseException;
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 import java.lang.reflect.Field;
 
@@ -26,7 +26,7 @@ public class JsonBoolean implements JsonValue {
         return value;
     }
 
-    public static JsonValue toJsonValue(Object obj) throws JsonParseException {
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
         if (obj == null) {
             return new JsonNull();
         } else if (obj instanceof JsonBoolean) {
@@ -34,7 +34,7 @@ public class JsonBoolean implements JsonValue {
         } else if (obj instanceof Boolean) {
             return new JsonBoolean((Boolean) obj);
         } else {
-            throw new JsonParseException("Cannot cast " + obj.getClass() + " to JsonBoolean");
+            throw new JsonValueParseException("Cannot cast " + obj.getClass() + " to JsonBoolean");
         }
     }
 

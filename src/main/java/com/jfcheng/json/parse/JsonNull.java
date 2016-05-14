@@ -1,6 +1,7 @@
 package com.jfcheng.json.parse;
 
-import com.google.gson.JsonParseException;
+
+import com.jfcheng.json.parse.exception.JsonValueParseException;
 
 /**
  * Created by jfcheng on 4/24/16.
@@ -20,13 +21,13 @@ public class JsonNull implements JsonValue {
     }
 
 
-    public static JsonValue toJsonValue(Object obj) throws JsonParseException {
+    public static JsonValue toJsonValue(Object obj) throws JsonValueParseException {
         if (obj instanceof JsonNull) {
             return (JsonNull) obj;
         } else if (obj == null) {
             return new JsonNull();
         } else {
-            throw new JsonParseException("Cannot cast " + obj.getClass() + " to JsonNull");
+            throw new JsonValueParseException("Cannot cast " + obj.getClass() + " to JsonNull");
         }
     }
 

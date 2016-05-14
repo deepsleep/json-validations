@@ -4,7 +4,6 @@ package com.jfcheng.json.parse;
  * Created by jfcheng on 4/19/16.
  */
 
-import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonObjectParseException;
 import com.jfcheng.json.parse.exception.JsonStringParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
@@ -262,7 +261,7 @@ public class JsonObject implements JsonValue {
             }
 
         } else {
-            throw new JsonParseException("JSON key is string, cannot cast to " + keyType);
+            throw new JsonValueParseException("JSON key is string, cannot cast to " + keyType);
         }
     }
 
@@ -364,7 +363,7 @@ public class JsonObject implements JsonValue {
         }
     }
 
-    public Byte getByte(String key) throws JsonStringParseException {
+    public Byte getByte(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -372,12 +371,12 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).byteValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
-    public Short getShort(String key) throws JsonStringParseException {
+    public Short getShort(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -385,12 +384,12 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).shortValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
-    public Integer getInt(String key) throws JsonStringParseException {
+    public Integer getInt(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -398,12 +397,12 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).intValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
-    public Long getLong(String key) throws JsonStringParseException {
+    public Long getLong(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -411,13 +410,13 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).longValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
 
-    public Float getFloat(String key) throws JsonStringParseException {
+    public Float getFloat(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -425,12 +424,12 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).floatValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
-    public Double getDouble(String key) throws JsonStringParseException {
+    public Double getDouble(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -438,12 +437,12 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonNumber) {
                 return ((Number) value.getValue()).doubleValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a number");
+                throw new JsonValueParseException("The value of " + key + " is not a number");
             }
         }
     }
 
-    public Boolean getBoolean(String key) throws JsonStringParseException {
+    public Boolean getBoolean(String key) throws JsonValueParseException {
         JsonValue value = getJsonValue(key);
         if (value == null) {
             return null;
@@ -451,7 +450,7 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonBoolean) {
                 return ((JsonBoolean) value).getValue();
             } else {
-                throw new JsonParseException("The value of " + key + " is not a boolean");
+                throw new JsonValueParseException("The value of " + key + " is not a boolean");
             }
         }
     }
@@ -464,7 +463,7 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonArray) {
                 return ((JsonArray) value).toJavaCollectionValue(null, null, collectionType, typeParameter, false);
             } else {
-                throw new JsonParseException("The value of " + key + " is not a collection");
+                throw new JsonValueParseException("The value of " + key + " is not a collection");
             }
         }
     }
@@ -477,7 +476,7 @@ public class JsonObject implements JsonValue {
             if (value instanceof JsonObject) {
                 return ((JsonObject) value).toJavaMapValue(null, null, mapType, keyType, valueType, false);
             } else {
-                throw new JsonParseException("The value of " + key + " is not a map");
+                throw new JsonValueParseException("The value of " + key + " is not a map");
             }
         }
     }

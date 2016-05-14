@@ -1,6 +1,5 @@
 package com.jfcheng.json.parse;
 
-import com.google.gson.JsonParseException;
 import com.jfcheng.json.parse.exception.JsonValueParseException;
 import com.jfcheng.json.annotation.AnnotationHelper;
 import com.jfcheng.json.annotation.exception.InvalidParameterValueException;
@@ -165,7 +164,7 @@ public class JsonParser {
                     return jObject.toOtherObjectValue(field, fieldName, rawClass, doValidation);
                 }
             } else {
-                throw new JsonParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);
+                throw new JsonValueParseException("Cannot cast " + jsonValue.getValue() + " to " + rawClass);
             }
         }
 
