@@ -1,6 +1,5 @@
 package com.jfcheng.json.test;
 
-import com.jfcheng.json.parse.JsonNoQuotationValue;
 import com.jfcheng.json.parse.JsonParser;
 import com.jfcheng.json.parse.JsonUtils;
 import com.jfcheng.json.parse.JsonValue;
@@ -34,7 +33,7 @@ public class JsonParserTest {
 
     @Test
     public void testCorrectJsonValue() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonFile0.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonFile0.json");
         JsonValue jsonValue = JsonParser.parse(reader);
         System.out.println("End of parsing testCorrectJson: " + jsonValue.toJsonText());
         JsonParser.parseString((String) jsonValue.toJsonText());
@@ -43,7 +42,7 @@ public class JsonParserTest {
 
     @Test
     public void testOnlyArrayJson() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonOnlyArray.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonOnlyArray.json");
         JsonValue jsonValue = JsonParser.parse(reader);
         System.out.println("End of parsing testOnlyArrayJson: " + jsonValue.toJsonText());
         JsonParser.parseString((String) jsonValue.toJsonText());
@@ -52,7 +51,7 @@ public class JsonParserTest {
 
     @Test
     public void testOnlyBooleanJson() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonOnlyBoolean.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonOnlyBoolean.json");
         JsonValue jsonValue = JsonParser.parse(reader);
         System.out.println("End of parsing testOnlyBooleanJson : " + jsonValue.toJsonText());
         Assert.assertEquals(true, jsonValue.toJsonText());
@@ -61,7 +60,7 @@ public class JsonParserTest {
 
     @Test
     public void testOnlyNullJson() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonOnlyNull.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonOnlyNull.json");
         JsonValue jsonValue = JsonParser.parse(reader);
         System.out.println("End of parsing testOnlyNullJson: " + jsonValue.toJsonText());
         Assert.assertEquals("null", jsonValue.toJsonText());
@@ -70,7 +69,7 @@ public class JsonParserTest {
 
     @Test
     public void testOnlyNumberJson() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonOnlyNumber.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonOnlyNumber.json");
         JsonValue jsonValue = JsonParser.parse(reader);
         System.out.println("End of parsing testOnlyNumberJson: " + jsonValue.toJsonText());
         reader.close();
@@ -79,7 +78,7 @@ public class JsonParserTest {
 
     @Test
     public void testSelfDefineFail1() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonFailTest1.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonFailTest1.json");
         Object jsonValue;
         boolean isFail = false;
         try {
@@ -95,7 +94,7 @@ public class JsonParserTest {
 
     @Test
     public void testSelfDefineFail2() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "JsonFailTest2.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "JsonFailTest2.json");
         Object jsonValue;
         boolean isFail = false;
         try {
@@ -111,7 +110,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitPass1() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass1.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass1.json");
         JsonValue jsonValue = null;
         boolean isFail = false;
         try {
@@ -129,7 +128,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitPass2() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass2.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass2.json");
         JsonValue jsonValue = null;
         boolean isFail = false;
         try {
@@ -146,7 +145,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitPass3() throws IOException, JsonValueParseException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass3.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass3.json");
         JsonValue jsonValue = null;
         boolean isFail = false;
         try {
@@ -163,7 +162,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail1() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail1.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail1.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -179,7 +178,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail2() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail2.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail2.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -195,7 +194,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail3() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail3.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail3.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -211,7 +210,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail4() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail4.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail4.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -227,7 +226,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail5() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail5.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail5.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -243,7 +242,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail6() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail6.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail6.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -259,7 +258,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail7() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail7.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail7.json");
         Object jsonValue;
         boolean isFail = false;
         try {
@@ -275,7 +274,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail8() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail8.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail8.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -291,7 +290,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail9() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail9.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail9.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -307,7 +306,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail10() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail10.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail10.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -323,7 +322,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail11() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail11.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail11.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -339,7 +338,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail12() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail12.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail12.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -355,7 +354,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail13() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail13.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail13.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -371,7 +370,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail14() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail14.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail14.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -387,7 +386,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail15() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail15.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail15.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -403,7 +402,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail16() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail16.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail16.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -419,7 +418,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail17() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail17.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail17.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -435,7 +434,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail18() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail18.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail18.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -451,7 +450,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail19() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail19.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail19.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -467,7 +466,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail20() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail20.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail20.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -483,7 +482,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail21() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail21.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail21.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -499,7 +498,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail22() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail22.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail22.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -515,7 +514,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail23() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail23.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail23.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -531,7 +530,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail24() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail24.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail24.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -547,7 +546,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail25() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail25.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail25.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -563,7 +562,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail26() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail26.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail26.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -579,7 +578,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail27() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail27.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail27.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -595,7 +594,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail28() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail28.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail28.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -611,7 +610,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail29() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail29.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail29.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -627,7 +626,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail30() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail30.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail30.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -643,7 +642,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail31() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail31.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail31.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -659,7 +658,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail32() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail32.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail32.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -675,7 +674,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonOrgSuitFail33() throws IOException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail33.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/fail33.json");
         Object jsonValue = null;
         boolean isFail = false;
         try {
@@ -803,7 +802,7 @@ public class JsonParserTest {
         String line2_1 = "public void testJsonOrgSuit";
         String line2_2 = caseName; // TestCaseName
         String line2_3 = "() throws IOException {";
-        String line3_1 = "Reader reader = FileReader.getBufferReader(RESOURCE_ROOT +\"json-org-testsuit/";
+        String line3_1 = "Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT +\"json-org-testsuit/";
         String line3_2 = fileName; // FileName
         String line3_3 = ".json\");";
         String line4 = "Object jsonValue = null;";

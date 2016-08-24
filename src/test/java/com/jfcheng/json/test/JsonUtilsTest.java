@@ -26,7 +26,7 @@ public class JsonUtilsTest {
 
     @Test
     public void testStudent() throws JsonValueParseException, ClassNotFoundException, InstantiationException, IOException, IllegalAccessException, InvalidParameterValueException, RequiredFieldNotFoundException {
-        Reader reader = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "student.json");
         //System.out.println(JsonParser.parse(reader));
         Student stu = (Student) JsonUtils.jsonTextToEntity(reader, Student.class);
         System.out.println("stu.c = " + stu.charValue);
@@ -45,10 +45,10 @@ public class JsonUtilsTest {
 
     @Test
     public void testEquals() throws IOException, JsonValueParseException {
-        Reader r1 = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
+        Reader r1 = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "student.json");
         JsonValue j1 = JsonParser.parse(r1);
 
-        Reader r2 = FileReader.getBufferReader(RESOURCE_ROOT + "student.json");
+        Reader r2 = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "student.json");
         JsonValue j2 = JsonParser.parse(r2);
 
         Assert.assertEquals(j1, j2);

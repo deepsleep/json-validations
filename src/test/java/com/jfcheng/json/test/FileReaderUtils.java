@@ -5,20 +5,22 @@ import java.io.*;
 /**
  * Created by jfcheng on 4/16/16.
  */
-public class FileReader {
+public class FileReaderUtils {
 
     public static BufferedReader getBufferReader(String path) {
-        FileInputStream in = null;
+
+        BufferedReader reader = null;
         try {
-            in = new FileInputStream(path);
+            reader = new BufferedReader(new FileReader(path));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         return reader;
     }
 
     public static String readToString(String path){
+        return readToString2(path);
+        /*
         BufferedReader reader = getBufferReader(path);
         String line ;
        StringBuilder stringBuilder = new StringBuilder();
@@ -30,6 +32,26 @@ public class FileReader {
             e.printStackTrace();
         }
         return stringBuilder.toString();
+        */
+    }
+
+    public static String readToString2(String path){
+        String str = null;
+        try (BufferedReader reader =
+                     new BufferedReader(new FileReader(path))) {
+            StringBuilder  strBuilder = new StringBuilder();
+            String line;
+            while((line = reader.readLine()) !=null){
+                strBuilder.append(line);
+            }
+
+            str = strBuilder.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return str;
     }
 
 }
