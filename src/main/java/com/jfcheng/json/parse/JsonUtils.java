@@ -8,6 +8,7 @@ import com.jfcheng.json.annotation.exception.RequiredFieldNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * Created by jfcheng on 4/28/16.
@@ -31,6 +32,20 @@ public class JsonUtils {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    public static Map<String,Object> jsonTextToMap(Reader reader) throws JsonValueParseException {
+        JsonValue jsonValue;
+        Map<String,Object> map = null;
+        try {
+            jsonValue = JsonParser.parse(reader);
+            map = JsonParser.parseJsonToMap((JsonObject) jsonValue);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return map;
     }
 
     public static Object jsonTextToEntityWithValidation(Reader reader, Class clazz) throws JsonValueParseException, ClassNotFoundException, InstantiationException,ValidationFailException{

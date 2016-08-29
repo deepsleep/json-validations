@@ -10,10 +10,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jfcheng on 4/19/16.
@@ -22,6 +19,43 @@ import java.util.Set;
  */
 public class JsonParser {
     private JsonParser() {
+    }
+
+
+    public static Map<String,Object> parseJsonToMap(JsonObject obj) throws JsonValueParseException {
+            return (Map<String, Object>) parseJsonValueToObject(obj);
+    }
+
+    public static Object parseJsonValueToObject(JsonValue jsonValue) throws JsonValueParseException {
+        if(jsonValue instanceof JsonNull ||
+                jsonValue instanceof JsonBoolean ||
+                jsonValue instanceof JsonString ||
+                jsonValue instanceof JsonNumber ){
+            return jsonValue.getValue();
+        }else if(jsonValue instanceof JsonArray){
+            ArrayList<Object> arrayList = new ArrayList<>();
+            JsonArray array = (JsonArray) jsonValue;
+            for(JsonValue j: array.getValue()){
+                arrayList.add(parseJsonValueToObject(j));
+            }
+            return arrayList;
+        }else if(jsonValue instanceof  JsonObject){
+            Map<String,Object> map = new HashMap<>();
+
+            JsonObject obj = (JsonObject) jsonValue;
+            Map<JsonString,JsonValue> values = obj.getValue();
+            Set<JsonString>  keys = values.keySet();
+
+            for(JsonString str: keys){
+                map.put(str.getValue(), parseJsonValueToObject(values.get(str)));
+            }
+            return map;
+        }else if(jsonValue == null){
+            return null;
+        }else{
+            throw new JsonValueParseException("Invalid JsonValue object.");
+        }
+
     }
 
     public static JsonValue parseString(String string) throws JsonValueParseException {

@@ -124,6 +124,7 @@ public class JsonParserTest {
         Assert.assertFalse(isFail);
 
         JsonParser.parseString((String) jsonValue.toJsonText());
+
     }
 
     @Test
@@ -141,6 +142,7 @@ public class JsonParserTest {
         }
         Assert.assertFalse(isFail);
         JsonParser.parseString((String) jsonValue.toJsonText());
+
     }
 
     @Test
@@ -158,6 +160,17 @@ public class JsonParserTest {
         }
         Assert.assertFalse(isFail);
         JsonParser.parseString((String) jsonValue.toJsonText());
+
+        Map<String,Object> map = JsonUtils.jsonTextToMap(FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass3.json"));
+        System.out.println(map);
+    }
+
+    @Test
+    public void testJsonOrgSuitPass4() throws IOException, JsonValueParseException {
+        Reader reader = FileReaderUtils.getBufferReader(RESOURCE_ROOT + "json-org-testsuit/pass4.json");
+
+        Map<String,Object> map = JsonUtils.jsonTextToMap(reader);
+        System.out.println(map);
     }
 
     @Test
