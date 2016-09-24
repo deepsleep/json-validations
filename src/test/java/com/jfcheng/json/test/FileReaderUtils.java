@@ -54,4 +54,18 @@ public class FileReaderUtils {
         return str;
     }
 
+    public static void main(String[] args) {
+//        File f = new File("test.txt");
+//        try {
+//            f.createNewFile();
+//            System.out.println(f.getPath());
+//            System.out.println(f.getAbsolutePath());
+//            System.out.println(f.getCanonicalPath());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        /Users/jfcheng/IdeaProjects/ObjectValidations/JsonObjectValidations/README.md
+        String path ="JsonObjectValidations/README.md";
+        System.out.println(readToString2(path));
+    }
 }

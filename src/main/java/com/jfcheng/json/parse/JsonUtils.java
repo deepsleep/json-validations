@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by jfcheng on 4/28/16.
@@ -18,6 +19,14 @@ public class JsonUtils {
     public static String entityToJsonText(Object obj) throws JsonValueParseException {
         JsonValue jsonValue = JsonParser.toJsonValue(obj);
         return String.valueOf(jsonValue.toJsonText());
+    }
+
+
+    public static String entityToPrettyJsonText(Objects obj) throws IOException, JsonValueParseException {
+        JsonValue jsonValue = JsonParser.toJsonValue(obj);
+        JsonWriter writer = new JsonWriter();
+        writer.writeJasonValue(jsonValue);
+        return writer.toString();
     }
 
     public static Object jsonTextToEntity(Reader reader, Class clazz) throws JsonValueParseException, ClassNotFoundException, InstantiationException {

@@ -55,7 +55,6 @@ public class JsonParser {
         }else{
             throw new JsonValueParseException("Invalid JsonValue object.");
         }
-
     }
 
     public static JsonValue parseString(String string) throws JsonValueParseException {
